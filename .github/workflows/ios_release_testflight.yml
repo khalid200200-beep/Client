@@ -40,6 +40,7 @@ jobs:
       - name: Set up Flutter SDK
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.27.x'
           channel: 'stable'
           cache: true
 
@@ -109,11 +110,6 @@ jobs:
 
           # 4. Set keychain in user search list
           security list-keychains -d user -s $KEYCHAIN_PATH $(security list-keychains -d user | tr -d '"')
-
-      - name: Install CocoaPods
-        working-directory: ${{ matrix.app }}/ios
-        run: |
-          pod install --repo-update
 
       - name: Build Release IPA
         working-directory: ${{ matrix.app }}
