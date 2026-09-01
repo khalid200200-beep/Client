@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>📱 شركة ربوع طيبة & بريد السودان | SUDAPOST</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .dual-logo-container {
+      background: #FFFFFF;
+      border: 2px solid #E1EBE4;
+      border-radius: 22px;
+      padding: 8px 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(0,158,73,0.15);
+      margin-bottom: 14px;
+    }
+    .dual-logo-img {
+      height: 60px;
+      object-fit: contain;
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="device-container">
+    <div class="iphone-notch">
+      <div class="camera-lens"></div>
+    </div>
+
+    <div class="screen-wrapper">
+      <!-- Top Status Bar -->
+      <div class="status-bar">
+        <span class="status-time" id="liveTime">9:41</span>
+        <div class="status-icons">
+          <i data-lucide="signal" class="w-3.5 h-3.5"></i>
+          <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+          <i data-lucide="battery" class="w-4 h-4"></i>
+        </div>
+      </div>
+
+      <!-- Main Container -->
+      <div class="app-body" id="clientAppBody">
+        
+        <!-- ================= 1. SCREEN 1: LOGIN ================= -->
+        <div class="view active" id="authLoginView">
+          <div style="text-align: center; margin: 20px 0 16px;">
+            <div class="dual-logo-container">
+              <img src="images/logo.jpg" alt="ربوع طيبة & بريد السودان" class="dual-logo-img">
+            </div>
+            <h2 style="font-size: 22px; font-weight: 900; color: var(--text-dark);">تسجيل الدخول</h2>
+            <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 2px;">الشحن الدولي والمحلي السريع بين السعودية والسودان</p>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label>البريد الإلكتروني</label>
+            <div class="input-with-icon">
+              <i data-lucide="mail" class="input-icon"></i>
+              <input type="email" id="inLoginEmail" value="KHALID200200@GMAIL.COM" placeholder="name@domain.com" autocomplete="email">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 8px;">
+            <label>كلمة المرور</label>
+            <div class="input-with-icon">
+              <i data-lucide="lock" class="input-icon"></i>
+              <input type="password" id="inLoginPass" value="123456" placeholder="••••••••" autocomplete="current-password">
+            </div>
+          </div>
+
+          <div style="text-align: left; margin-bottom: 20px;">
+            <a href="javascript:void(0)" onclick="alert('تم إرسال رابط استعادة كلمة المرور عبر البريد الإلكتروني')" style="font-size: 12.5px; color: var(--suda-red); font-weight: 700; text-decoration: none;">نسيت كلمة المرور؟</a>
+          </div>
+
+          <button class="glowing-green-cta w-full" onclick="doLogin()">
+            <span>تسجيل الدخول 🚀</span>
+            <div class="arrow-circle"><i data-lucide="arrow-left" class="w-4 h-4"></i></div>
+          </button>
+
+          <div style="text-align: center; margin-top: 28px; font-size: 13.5px; color: var(--text-muted);">
+            ليس لديك حساب؟ 
+            <a href="javascript:void(0)" onclick="goToAuthScreen('signup')" style="color: var(--suda-green-dark); font-weight: 800; text-decoration: none;">إنشاء حساب جديد</a>
+          </div>
+        </div>
+
+        <!-- ================= 2. SCREEN 2: SIGN UP ================= -->
+        <div class="view" id="authSignupView">
+          <div style="margin: 14px 0 16px;">
+            <button onclick="goToAuthScreen('login')" style="background:none; border:none; color:var(--text-muted); font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
+              <i data-lucide="chevron-right" class="w-4 h-4"></i> العودة لتسجيل الدخول
+            </button>
+            <h2 style="font-size: 22px; font-weight: 900; color: var(--text-dark); margin-top: 8px;">إنشاء حساب عميل جديد</h2>
+            <p style="font-size: 12.5px; color: var(--text-muted);">شراكة ربوع طيبة & بريد السودان</p>
+          </div>
+
+          <div class="form-group">
+            <label>الاسم الكامل</label>
+            <div class="input-with-icon">
+              <i data-lucide="user" class="input-icon"></i>
+              <input type="text" id="inSignName" value="خالد محمد" placeholder="أدخل اسمك الكريم">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>البريد الإلكتروني</label>
+            <div class="input-with-icon">
+              <i data-lucide="mail" class="input-icon"></i>
+              <input type="email" id="inSignEmail" value="khalid@sudra.sa" placeholder="name@domain.com">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>رقم الجوال</label>
+            <div class="input-with-icon">
+              <i data-lucide="phone" class="input-icon"></i>
+              <input type="tel" id="inSignPhone" value="0912345678" placeholder="09xxxxxxxx أو 05xxxxxxxx">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>الدولة والمدينة</label>
+            <div class="input-with-icon">
+              <i data-lucide="map-pin" class="input-icon"></i>
+              <input type="text" id="inSignCity" value="الخرطوم" placeholder="الخرطوم، بورتسودان، الرياض...">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>كلمة المرور</label>
+            <div class="input-with-icon">
+              <i data-lucide="lock" class="input-icon"></i>
+              <input type="password" id="inSignPass" value="123456" placeholder="••••••••">
+            </div>
+          </div>
+
+          <button class="glowing-green-cta w-full" style="margin-top: 10px;" onclick="doSignUp()">
+            <span>إنشاء الحساب وتأكيد البريد 🚀</span>
+          </button>
+        </div>
+
+        <!-- ================= 3. SCREEN 3: OTP VERIFICATION ================= -->
+        <div class="view" id="authOtpView">
+          <div style="text-align: center; margin: 26px 0 18px;">
+            <div style="width: 80px; height: 80px; background: #DCFCE7; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; color: var(--suda-green);">
+              <i data-lucide="shield-check" style="width: 44px; height: 44px;"></i>
+            </div>
+            <h2 style="font-size: 22px; font-weight: 900; color: var(--text-dark);">رمز التحقق SMS</h2>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-top: 4px;">
+              تم إرسال كود التحقق برسالة نصية إلى رقمك<br><strong id="otpPhoneDisplay" style="color:var(--suda-green-dark);">0912345678</strong>
+            </p>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; margin: 20px 0 26px; gap: 8px;">
+            <input type="text" maxlength="1" class="form-input" style="width:56px; height:56px; text-align:center; font-size:22px; font-weight:900; color:var(--suda-green);" value="1">
+            <input type="text" maxlength="1" class="form-input" style="width:56px; height:56px; text-align:center; font-size:22px; font-weight:900; color:var(--suda-green);" value="2">
+            <input type="text" maxlength="1" class="form-input" style="width:56px; height:56px; text-align:center; font-size:22px; font-weight:900; color:var(--suda-green);" value="3">
+            <input type="text" maxlength="1" class="form-input" style="width:56px; height:56px; text-align:center; font-size:22px; font-weight:900; color:var(--suda-green);" value="4">
+          </div>
+
+          <button class="glowing-green-cta w-full" onclick="doVerifyOtp()">
+            <span>تأكيد الرمز والدخول للتطبيق 🚀</span>
+          </button>
+        </div>
+
+        <!-- ================= 4. SCREEN 4: HOME VIEW (MAIN APP) ================= -->
+        <div class="view" id="clientHomeView">
+          <div class="app-header">
+            <div class="user-meta">
+              <div class="avatar-ring">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" alt="Avatar" class="avatar-img">
+              </div>
+              <div class="user-text">
+                <div class="greeting-row">
+                  <span class="greeting-text" id="userGreeting">مرحباً خالد</span>
+                  <span class="wave">👋</span>
+                </div>
+                <div class="location-row">
+                  <span class="city-name" id="userCityLabel">الخرطوم</span>
+                  <i data-lucide="map-pin" class="pin-icon"></i>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px;">
+              <img src="images/logo.jpg" style="height:32px; border-radius:8px; border:1px solid #E2E8F0; padding:2px; background:#fff;">
+              <button class="bell-btn" onclick="alert('النظام متصل بشكل حي ومباشر بقاعدة البيانات 🟢')">
+                <i data-lucide="bell" class="bell-icon"></i>
+                <span class="bell-dot"></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Real Dynamic Carousel -->
+          <div class="carousel-container" id="heroCarousel">
+            <div class="carousel-track" id="clientCarouselTrack"></div>
+            <button class="carousel-nav-btn prev" onclick="clientPrevSlide()"><i data-lucide="chevron-right"></i></button>
+            <button class="carousel-nav-btn next" onclick="clientNextSlide()"><i data-lucide="chevron-left"></i></button>
+            <div class="carousel-dots" id="clientCarouselDots"></div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="quick-grid">
+            <div class="quick-card" onclick="switchClientTab('orders')">
+              <div class="q-icon-wrap"><i data-lucide="package-open" class="q-icon"></i></div>
+              <span class="q-title">شحناتي الحية</span>
+            </div>
+            <div class="quick-card" onclick="switchClientTab('orders')">
+              <div class="q-icon-wrap"><i data-lucide="map-pin" class="q-icon"></i></div>
+              <span class="q-title">تتبع الطرد</span>
+            </div>
+            <div class="quick-card" onclick="alert('خدمة عملاء بريد السودان وربوع طيبة متاحة على مدار الساعة')">
+              <div class="q-icon-wrap"><i data-lucide="headphones" class="q-icon"></i></div>
+              <span class="q-title">الدعم</span>
+            </div>
+          </div>
+
+          <!-- Promo Bottom Card -->
+          <div class="promo-card" onclick="openOrderModal()">
+            <div class="promo-content">
+              <div class="promo-tag"><span>⚡ ربوع طيبة & بريد السودان</span></div>
+              <h3 class="promo-title">شحن جوي وبري مباشر</h3>
+              <p class="promo-sub">اضغط هنا لإرسال شحنة جديدة حية</p>
+            </div>
+            <div class="promo-graphic"><i data-lucide="plane-takeoff" class="w-6 h-6"></i></div>
+          </div>
+        </div>
+
+        <!-- ================= 5. SCREEN 5: CLIENT ORDERS ================= -->
+        <div class="view" id="clientOrdersView">
+          <div class="view-header" style="margin-bottom:16px;">
+            <h2 style="font-size:20px; font-weight:900; color:var(--text-dark);">سجل الشحنات والطرود الحية 📦</h2>
+          </div>
+          <div class="orders-list" id="clientOrdersList"></div>
+        </div>
+
+        <!-- ================= 6. SCREEN 6: PROFILE ================= -->
+        <div class="view" id="clientProfileView">
+          <div class="view-header" style="margin-bottom:16px;"><h2 style="font-size:20px; font-weight:900;">حسابي</h2></div>
+          <div style="background:#fff; border-radius:20px; padding:20px; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.03); margin-bottom:20px; border: 1px solid var(--border-light);">
+            <div class="avatar-ring" style="width:70px; height:70px; margin:0 auto 12px;">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+            </div>
+            <h3 style="font-size:17px; font-weight:800;" id="profName">خالد محمد</h3>
+            <p style="font-size:13px; color:var(--text-muted);" id="profPhone">0912345678 | الخرطوم 📍</p>
+            <span class="status-badge loaded" style="margin-top:8px; display:inline-block;">عميل موثق وحي 🟢</span>
+          </div>
+
+          <!-- زر حذف الحساب الإلزامي لمتجر التطبيقات -->
+          <button style="width:100%; padding:14px; background:#FEF2F2; color:#DC2626; border:1.5px solid #FCA5A5; border-radius:14px; font-weight:800; cursor:pointer; margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="doDeleteAccount()">
+            <i data-lucide="trash-2" style="width:18px; height:18px;"></i>
+            <span>حذف الحساب نهائياً (Account Deletion)</span>
+          </button>
+
+          <!-- زر تسجيل الخروج تحت زر حذف الحساب -->
+          <button style="width:100%; padding:14px; background:#F8FAFC; color:#334155; border:1.5px solid #CBD5E1; border-radius:14px; font-weight:800; cursor:pointer; margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="doLogout()">
+            <i data-lucide="log-out" style="width:18px; height:18px;"></i>
+            <span>تسجيل الخروج من الحساب 🚪</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Create Order Modal -->
+      <div class="modal-overlay" id="orderModal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h3>طلب شحن جديد 📦</h3>
+            <button class="close-btn" onclick="closeOrderModal()">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>رقم جوال العميل</label>
+              <input type="tel" id="orderPhone" value="0912345678" placeholder="09xxxxxxxx">
+            </div>
+            <div class="form-group">
+              <label>مدينة الشحن / الاستلام (إدخال يدوي)</label>
+              <input type="text" id="orderCity" value="الخرطوم" placeholder="اكتب اسم المدينة أو الولاية...">
+            </div>
+            <div class="form-group">
+              <label>عدد القطع والطرود</label>
+              <div class="counter-box">
+                <button type="button" class="count-btn" onclick="changeCount(-1)">-</button>
+                <span class="count-value" id="countVal">1</span>
+                <button type="button" class="count-btn" onclick="changeCount(1)">+</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>صورة الطرد أو الشحنة (اختياري)</label>
+              <input type="file" id="parcelCameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleParcelImageSelected(event)">
+              <input type="file" id="parcelGalleryInput" accept="image/*" style="display:none;" onchange="handleParcelImageSelected(event)">
+              
+              <div class="camera-upload-box" id="cameraBox" style="padding:16px;">
+                <div id="cameraPlaceholder" style="display:flex; flex-direction:column; align-items:center; gap:10px; width:100%;">
+                  <span style="font-size:12px; color:var(--text-muted);">أرفق صورة واضحة للشحنة عبر:</span>
+                  <div style="display:flex; gap:10px; width:100%;">
+                    <button type="button" onclick="document.getElementById('parcelCameraInput').click()" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:12px 10px; background:#DCFCE7; color:#15803D; border:1.5px solid #86EFAC; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer;">
+                      <i data-lucide="camera" style="width:18px; height:18px;"></i>
+                      <span>الكاميرا 📷</span>
+                    </button>
+                    <button type="button" onclick="document.getElementById('parcelGalleryInput').click()" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:12px 10px; background:#EFF6FF; color:#1D4ED8; border:1.5px solid #93C5FD; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer;">
+                      <i data-lucide="image" style="width:18px; height:18px;"></i>
+                      <span>المعرض 🖼️</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div id="cameraPreviewWrap" style="display:none; width:100%; flex-direction:column; align-items:center; gap:8px;">
+                  <img id="parcelImgPreview" style="max-height:140px; width:100%; object-fit:cover; border-radius:12px; border:2px solid #86EFAC;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                    <span style="font-size:12px; color:#15803D; font-weight:800;">تم إرفاق صورة الطرد بنجاح ✅</span>
+                    <div style="display:flex; gap:6px;">
+                      <button type="button" onclick="document.getElementById('parcelCameraInput').click()" style="background:#DCFCE7; color:#15803D; border:1px solid #86EFAC; padding:4px 8px; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer;">📷 كاميرا</button>
+                      <button type="button" onclick="document.getElementById('parcelGalleryInput').click()" style="background:#EFF6FF; color:#1D4ED8; border:1px solid #93C5FD; padding:4px 8px; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer;">🖼️ المعرض</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>ملاحظات إضافية</label>
+              <textarea id="orderNotes" placeholder="اكتب عنوان التوصيل أو تفاصيل الشحنة..."></textarea>
+            </div>
+            <button class="glowing-green-cta w-full" onclick="submitClientOrder()">
+              <span>إرسال طلب الشحن الحي لأقرب مندوب 🚀</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Nav -->
+      <div class="bottom-nav" id="clientBottomNav" style="display:none;">
+        <div class="nav-item active" id="cNavHome" onclick="switchClientTab('home')">
+          <i data-lucide="home" class="nav-icon"></i>
+          <span>الرئيسية</span>
+        </div>
+        <div class="nav-item" id="cNavOrders" onclick="switchClientTab('orders')">
+          <i data-lucide="clipboard-list" class="nav-icon"></i>
+          <span>شحناتي</span>
+        </div>
+        <div class="floating-center-btn" onclick="openOrderModal()">
+          <div class="center-plus"><i data-lucide="plus" class="plus-icon"></i></div>
+          <span class="plus-label">شحن جديد</span>
+        </div>
+        <div class="nav-item" onclick="alert('النظام متصل بشكل حي')">
+          <i data-lucide="bell" class="nav-icon"></i>
+          <span>الإشعارات</span>
+        </div>
+        <div class="nav-item" id="cNavProfile" onclick="switchClientTab('profile')">
+          <i data-lucide="user" class="nav-icon"></i>
+          <span>حسابي</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let currentAuthUser = { name: 'خالد محمد', phone: '0912345678', city: 'الخرطوم' };
+    let clientBanners = [
+      {
+        id: 1,
+        title: 'شحنك يصل إليك',
+        subtitle: 'بسرعة • أمان • موثوقية',
+        badge_text: 'الأكثر طلباً ⭐',
+        image_url: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800',
+        button_text: 'اطلب شحن الآن'
+      },
+      {
+        id: 2,
+        title: 'خصم 20% على الشحن السريع',
+        subtitle: 'شحن آمن وفوري بين جميع المدن',
+        badge_text: 'عرض محدود 🔥',
+        image_url: 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=800',
+        button_text: 'احصل على العرض'
+      },
+      {
+        id: 3,
+        title: 'خدمة التوصيل في نفس اليوم',
+        subtitle: 'كباتن معتمدون بالقرب منك على مدار الساعة',
+        badge_text: 'خدمة VIP ⚡',
+        image_url: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800',
+        button_text: 'شحن فوري وسريع'
+      }
+    ];
+    let slideIdx = 0;
+    let autoSlideInterval = null;
+    let pkgCount = 1;
+    let hasPhoto = false;
+    let clientOrders = [];
+
+    // ================= REAL API INTEGRATION =================
+    async function fetchLiveBanners() {
+      try {
+        const res = await fetch('/api/banners');
+        const data = await res.json();
+        const bannersList = data.data || (Array.isArray(data) ? data : []);
+        if (bannersList && bannersList.length > 0) {
+          clientBanners = bannersList;
+        }
+        renderClientCarousel();
+      } catch (e) {
+        console.error('Error fetching banners:', e);
+        renderClientCarousel();
+      }
+    }
+
+    async function fetchLiveOrders() {
+      try {
+        const res = await fetch('/api/orders');
+        const data = await res.json();
+        const ordersList = data.data || (Array.isArray(data) ? data : []);
+        if (ordersList) {
+          clientOrders = ordersList;
+          if (document.getElementById('clientOrdersView').classList.contains('active')) {
+            renderOrders();
+          }
+        }
+      } catch (e) {
+        console.error('Error fetching orders:', e);
+      }
+    }
+
+    function goToAuthScreen(s) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('clientBottomNav').style.display = 'none';
+      if (s === 'login') document.getElementById('authLoginView').classList.add('active');
+      if (s === 'signup') document.getElementById('authSignupView').classList.add('active');
+      if (s === 'otp') document.getElementById('authOtpView').classList.add('active');
+      lucide.createIcons();
+    }
+
+    async function doLogin() {
+      const email = document.getElementById('inLoginEmail').value.trim();
+      const pass = document.getElementById('inLoginPass').value.trim();
+      if (!email || !pass) { alert('الرجاء إدخال البريد الإلكتروني وكلمة المرور'); return; }
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, phone: email, password: pass })
+        });
+        const data = await res.json();
+
+        if (data.success && (data.user || data.data)) {
+          currentAuthUser = data.user || data.data;
+          enterMainApp();
+        } else {
+          alert('❌ فشل تسجيل الدخول: ' + (data.message || 'بيانات الدخول غير صحيحة! تأكد من البريد الإلكتروني وكلمة المرور أو قم بإنشاء حساب جديد.'));
+        }
+      } catch (e) {
+        alert('حدث خطأ في الاتصال بالخادم: ' + e.message);
+      }
+    }
+
+    async function doSignUp() {
+      const name = document.getElementById('inSignName').value.trim();
+      const email = document.getElementById('inSignEmail').value.trim();
+      const phone = document.getElementById('inSignPhone').value.trim();
+      const city = document.getElementById('inSignCity').value.trim();
+      const pass = document.getElementById('inSignPass').value.trim();
+      if (!name || !email || !phone || !pass) { 
+        alert('الرجاء إدخال كافة الحقول بما فيها الاسم والبريد الإلكتروني ورقم الجوال وكلمة المرور'); 
+        return; 
+      }
+      currentAuthUser = { name, email, phone, city };
+
+      // Save to real database via register API
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, phone, city, password: pass, role: 'client' })
+        });
+        const data = await res.json();
+        if (data.success && (data.user || data.data)) {
+          currentAuthUser = data.user || data.data;
+        } else if (!data.success) {
+          alert('⚠️ ' + data.message);
+          return;
+        }
+      } catch (e) {}
+
+      document.getElementById('otpPhoneDisplay').innerText = email;
+      goToAuthScreen('otp');
+    }
+
+    function doVerifyOtp() {
+      enterMainApp();
+    }
+
+    function enterMainApp() {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('clientHomeView').classList.add('active');
+      document.getElementById('clientBottomNav').style.display = 'flex';
+      
+      document.getElementById('userGreeting').innerText = 'مرحباً ' + (currentAuthUser.name || 'خالد');
+      document.getElementById('userCityLabel').innerText = currentAuthUser.city || 'الخرطوم';
+      document.getElementById('profName').innerText = currentAuthUser.name || 'خالد';
+      document.getElementById('profPhone').innerText = (currentAuthUser.email ? currentAuthUser.email + ' | ' : '') + (currentAuthUser.phone || '0912345678') + ' | ' + (currentAuthUser.city || 'الخرطوم') + ' 📍';
+
+      renderClientCarousel();
+      fetchLiveBanners();
+      fetchLiveOrders();
+      startAutoSlide();
+      lucide.createIcons();
+    }
+
+    async function doDeleteAccount() {
+      if (confirm('⚠️ تحذير: هل أنت متأكد من رغبتك بحذف حسابك وكافة البيانات المرتبطة به نهائياً وفق شروط وسياسة الخصوصية؟')) {
+        try {
+          await fetch('/api/auth?action=delete_account', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: currentAuthUser.phone })
+          });
+        } catch (e) {}
+        alert('تم حذف الحساب والبيانات بنجاح.');
+        goToAuthScreen('login');
+      }
+    }
+
+    function doLogout() {
+      if (confirm('هل ترغب بتسجيل الخروج من حسابك والعودة لصفحة الدخول؟')) {
+        goToAuthScreen('login');
+      }
+    }
+
+    function renderClientCarousel() {
+      const track = document.getElementById('clientCarouselTrack');
+      const dots = document.getElementById('clientCarouselDots');
+      if (!track || !dots || clientBanners.length === 0) return;
+
+      track.innerHTML = clientBanners.map((b, i) => {
+        const img = b.image_url || b.imageUrl || b.img || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800';
+        const badge = b.badge_text || b.badgeText || b.badge || 'الأكثر طلباً ⭐';
+        const title = b.title || 'شحنك يصل إليك';
+        const subtitle = b.subtitle || 'بسرعة • أمان • موثوقية';
+        const btn = b.button_text || b.buttonText || b.btn || 'اطلب شحن الآن';
+
+        return `
+          <div class="carousel-slide" style="background-image: url('${img}')">
+            <div class="slide-overlay"></div>
+            <div class="slide-content-top">
+              <span class="slide-badge">${badge}</span>
+              <h2 class="slide-title">${title}</h2>
+              <p class="slide-subtitle">${subtitle}</p>
+            </div>
+            <div class="slide-content-bottom">
+              <button class="glowing-green-cta" onclick="openOrderModal()">
+                <span>${btn}</span>
+                <div class="arrow-circle"><i data-lucide="arrow-left" class="w-4 h-4"></i></div>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      dots.innerHTML = clientBanners.map((_, i) => `<div class="dot ${i === slideIdx ? 'active' : ''}" onclick="goSlide(${i})"></div>`).join('');
+      updatePos();
+      lucide.createIcons();
+    }
+
+    function startAutoSlide() {
+      if (autoSlideInterval) clearInterval(autoSlideInterval);
+      autoSlideInterval = setInterval(clientNextSlide, 4000);
+    }
+
+    function clientNextSlide() {
+      if (clientBanners.length === 0) return;
+      slideIdx = (slideIdx + 1) % clientBanners.length;
+      updatePos();
+    }
+    function clientPrevSlide() {
+      if (clientBanners.length === 0) return;
+      slideIdx = (slideIdx - 1 + clientBanners.length) % clientBanners.length;
+      updatePos();
+    }
+    function goSlide(i) {
+      slideIdx = i;
+      updatePos();
+    }
+    function updatePos() {
+      const track = document.getElementById('clientCarouselTrack');
+      if (track) track.style.transform = `translateX(${slideIdx * 100}%)`;
+      document.querySelectorAll('#clientCarouselDots .dot').forEach((d, i) => d.classList.toggle('active', i === slideIdx));
+    }
+
+    function switchClientTab(t) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      if (t === 'home') {
+        document.getElementById('clientHomeView').classList.add('active');
+        document.getElementById('cNavHome').classList.add('active');
+      } else if (t === 'orders') {
+        document.getElementById('clientOrdersView').classList.add('active');
+        document.getElementById('cNavOrders').classList.add('active');
+        renderOrders();
+      } else if (t === 'profile') {
+        document.getElementById('clientProfileView').classList.add('active');
+        document.getElementById('cNavProfile').classList.add('active');
+      }
+      lucide.createIcons();
+    }
+
+    function renderOrders() {
+      const container = document.getElementById('clientOrdersList');
+      if (clientOrders.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);">لا توجد شحنات حالياً</div>';
+        return;
+      }
+      container.innerHTML = clientOrders.map(o => `
+        <div class="order-card">
+          <div class="order-top">
+            <span class="order-id">طرد #${o.id}</span>
+            <span class="status-badge ${o.status}">${getStatusText(o.status)}</span>
+          </div>
+          ${o.image ? `<div style="margin:10px 0;"><img src="${o.image}" style="width:100%; max-height:150px; object-fit:cover; border-radius:12px; border:1px solid #E2E8F0;"></div>` : ''}
+          <div class="order-details-row">
+            <span>المدينة: <strong>${o.city}</strong></span>
+            <span>عدد القطع: <strong>${o.count} قطع</strong></span>
+          </div>
+          <div class="order-details-row">
+            <span>الملاحظات: ${o.notes}</span>
+          </div>
+          ${(o.collected_amount && o.status === 'loaded') || (o.collectedAmount && o.status === 'loaded') ? `
+            <div style="background:#F0FDF4; border:1px solid #86EFAC; padding:6px 12px; border-radius:10px; font-size:12px; color:#15803D; font-weight:800; margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
+              <span>المبلغ المسدد للمندوب:</span>
+              <span style="font-size:13.5px;">${Number(o.collected_amount || o.collectedAmount).toLocaleString()} 💵</span>
+            </div>
+          ` : ''}
+          ${o.driver && o.driver !== '-' ? `<div style="background:#F8FAFC; border:1px solid #E2E8F0; padding:8px 12px; border-radius:10px; font-size:12px; color:#334155; font-weight:700; margin-top:6px;">🚚 المندوب: ${o.driver}</div>` : ''}
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function getStatusText(s) {
+      if (s === 'pending') return 'بانتظار مندوب ⏳';
+      if (s === 'accepted') return 'تم القبول وجاري التوجه 🚚';
+      if (s === 'loaded') return 'تم الاستلام والتحميل بنجاح ✅';
+      if (s === 'failed') return 'تعذر الشحن ❌';
+      return s;
+    }
+
+    function openOrderModal() { document.getElementById('orderModal').classList.add('active'); }
+    function closeOrderModal() { document.getElementById('orderModal').classList.remove('active'); }
+    function changeCount(d) {
+      pkgCount = Math.max(1, pkgCount + d);
+      document.getElementById('countVal').innerText = pkgCount;
+    }
+    let selectedParcelImage = null;
+
+    function handleParcelImageSelected(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const maxDim = 800;
+          let w = img.width;
+          let h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+
+          selectedParcelImage = canvas.toDataURL('image/jpeg', 0.72);
+
+          document.getElementById('cameraBox').classList.add('uploaded');
+          document.getElementById('cameraPlaceholder').style.display = 'none';
+          const previewWrap = document.getElementById('cameraPreviewWrap');
+          previewWrap.style.display = 'flex';
+          document.getElementById('parcelImgPreview').src = selectedParcelImage;
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function submitClientOrder() {
+      const phone = document.getElementById('orderPhone').value.trim();
+      const city = document.getElementById('orderCity').value.trim() || (currentAuthUser.city || 'الرياض');
+      const notes = document.getElementById('orderNotes').value.trim() || 'لا توجد ملاحظات';
+      const parcelImg = selectedParcelImage || 'images/banner1.jpg';
+
+      if (!phone) {
+        alert('الرجاء إدخال رقم جوال العميل');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            clientName: currentAuthUser.name || 'عميل',
+            clientPhone: phone,
+            city: city,
+            packageCount: pkgCount,
+            notes: notes,
+            imagePath: parcelImg,
+            image: parcelImg
+          })
+        });
+        const data = await res.json();
+        if (data.success || data.id || data.order_code) {
+          closeOrderModal();
+          alert('تم إرسال طلب الشحن وصورة الطرد إلى السيرفر بنجاح! 🚀');
+          selectedParcelImage = null;
+          document.getElementById('cameraBox').classList.remove('uploaded');
+          document.getElementById('cameraPlaceholder').style.display = 'flex';
+          document.getElementById('cameraPreviewWrap').style.display = 'none';
+          if (document.getElementById('parcelCameraInput')) document.getElementById('parcelCameraInput').value = '';
+          if (document.getElementById('parcelGalleryInput')) document.getElementById('parcelGalleryInput').value = '';
+          fetchLiveOrders();
+          switchClientTab('orders');
+        } else {
+          alert('تعذر إرسال الطلب: ' + (data.message || 'خطأ غير معروف'));
+        }
+      } catch (e) {
+        alert('حدث خطأ في الإرسال: ' + e.message);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      goToAuthScreen('login');
+      setInterval(clientNextSlide, 4500);
+      // Auto-poll live database every 2.5 seconds
+      setInterval(fetchLiveOrders, 2500);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+.dart_tool/
+.idea/
+.vscode/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+
+# Android and iOS generated files
+android/.gradle/
+android/local.properties
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/ephemeral/
+
+# macOS generated files
+**/GeneratedPluginRegistrant.*
+
+# OS files
+.DS_Store
+Thumbs.db

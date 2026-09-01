@@ -1,0 +1,134 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "المشرف العام",
+      "email": "admin@sudapost.sd",
+      "phone": "0551234567",
+      "password": "123456",
+      "role": "admin"
+    },
+    {
+      "id": 2,
+      "name": "إدارة بريد السودان",
+      "email": "admin@shipping.com",
+      "phone": "0557654321",
+      "password": "123456",
+      "role": "admin"
+    },
+    {
+      "id": 3,
+      "name": "خالد محمد",
+      "phone": "0912345678",
+      "password": "123456",
+      "city": "الخرطوم",
+      "role": "client"
+    },
+    {
+      "id": 4,
+      "name": "سارة بابكر",
+      "phone": "0922334455",
+      "password": "123456",
+      "city": "بورتسودان",
+      "role": "client"
+    },
+    {
+      "id": 5,
+      "name": "أحمد كابتن التوصيل",
+      "phone": "0901234567",
+      "password": "123456",
+      "city": "الخرطوم",
+      "role": "driver"
+    }
+  ],
+  "orders": [
+    {
+      "id": "SUD-9821",
+      "client": "خالد محمد",
+      "phone": "0912345678",
+      "city": "الخرطوم",
+      "count": 3,
+      "driver": "-",
+      "notes": "طرد ملابس ووثائق رسمية",
+      "image": "images/banner1.jpg",
+      "status": "pending",
+      "createdAt": "2026-08-22T08:30:00Z"
+    },
+    {
+      "id": "SUD-8714",
+      "client": "سارة بابكر",
+      "phone": "0922334455",
+      "city": "بورتسودان",
+      "count": 1,
+      "driver": "أحمد كابتن التوصيل (0901234567)",
+      "notes": "التسليم في شارع النيل",
+      "image": "images/banner2.jpg",
+      "status": "accepted",
+      "createdAt": "2026-08-22T08:45:00Z"
+    },
+    {
+      "id": "SUD-7622",
+      "client": "عثمان عبد الله",
+      "phone": "0967788990",
+      "city": "الخرطوم",
+      "count": 4,
+      "driver": "أحمد كابتن التوصيل (0901234567)",
+      "notes": "كراتين شحن جوي",
+      "image": "images/banner1.jpg",
+      "status": "loaded",
+      "createdAt": "2026-08-22T09:00:00Z"
+    }
+  ],
+  "drivers": [
+    {
+      "id": 1,
+      "name": "أحمد كابتن التوصيل",
+      "phone": "0901234567",
+      "city": "الخرطوم",
+      "plate": "خ 12345",
+      "active": true
+    },
+    {
+      "id": 2,
+      "name": "سعيد القحطاني",
+      "phone": "0961122334",
+      "city": "بورتسودان",
+      "plate": "ب 56789",
+      "active": false
+    }
+  ],
+  "clients": [
+    {
+      "id": 1,
+      "name": "خالد محمد",
+      "phone": "0912345678",
+      "city": "الخرطوم",
+      "active": true
+    },
+    {
+      "id": 2,
+      "name": "سارة بابكر",
+      "phone": "0922334455",
+      "city": "بورتسودان",
+      "active": true
+    }
+  ],
+  "banners": [
+    {
+      "id": 1,
+      "title": "شحن جوي وبري سريع وموثوق",
+      "subtitle": "شراكة ربوع طيبة & بريد السودان SUDAPOST",
+      "badge": "خدمة دولية ومحلية ⭐",
+      "img": "images/banner1.jpg",
+      "btn": "اطلب شحن فوري الآن"
+    },
+    {
+      "id": 2,
+      "title": "توصيل الطرود والوثائق لباب بيتك",
+      "subtitle": "شحن آمن وفوري بين جميع المدن والولايات",
+      "badge": "أمان وموثوقية ⚡",
+      "img": "images/banner2.jpg",
+      "btn": "شحن الطرود الآن"
+    }
+  ]
+}

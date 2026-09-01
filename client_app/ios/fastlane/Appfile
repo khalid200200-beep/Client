@@ -1,0 +1,2 @@
+app_identifier("com.shipping.clientapp")
+# apple_id is not required when using App Store Connect API Key

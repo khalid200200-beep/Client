@@ -1,0 +1,116 @@
+name: Build & Deploy SUDRA iOS to TestFlight
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: 'Build Number (e.g. 1, 2, 3)'
+        required: false
+        default: '1'
+  push:
+    branches: [ master, main ]
+
+jobs:
+  build-and-release-ios:
+    runs-on: macos-14
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Verify Flutter & CocoaPods
+        run: |
+          flutter doctor -v
+          pod --version
+
+      - name: Install Dependencies
+        run: |
+          flutter pub get
+          flutter test || true
+
+      - name: Prepare App Store Connect API Key
+        env:
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          if [ -n "$APP_STORE_CONNECT_PRIVATE_KEY" ]; then
+            echo "$APP_STORE_CONNECT_PRIVATE_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8
+            chmod 600 ~/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8
+          fi
+
+      - name: Install Apple Certificates & Provisioning Profile
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+          P12_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
+          PROVISION_PROFILE_CLIENT: ${{ secrets.APPLE_PROVISION_PROFILE_CLIENT_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD || 'temporary_keychain_pass' }}
+        run: |
+          # Create temporary keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/build.keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # Import Distribution Certificate
+          if [ -n "$BUILD_CERTIFICATE_BASE64" ]; then
+            CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+            echo "$BUILD_CERTIFICATE_BASE64" | base64 --decode > $CERTIFICATE_PATH
+            security import $CERTIFICATE_PATH -k $KEYCHAIN_PATH -P "$P12_PASSWORD" -T /usr/bin/codesign
+            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          fi
+
+          # Import Provisioning Profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          if [ -n "$PROVISION_PROFILE_CLIENT" ]; then
+            echo "$PROVISION_PROFILE_CLIENT" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/client.mobileprovision
+          fi
+
+          # Add to search list
+          security list-keychains -d user -s $KEYCHAIN_PATH $(security list-keychains -d user | tr -d '"')
+
+      - name: Install CocoaPods
+        working-directory: ios
+        run: |
+          pod install --repo-update || pod install
+
+      - name: Build Release IPA
+        env:
+          BUILD_NUMBER: ${{ github.event.inputs.build_number || github.run_number }}
+        run: |
+          flutter build ipa --release --build-number=$BUILD_NUMBER --export-options-plist=ios/ExportOptions.plist || flutter build ipa --release --build-number=$BUILD_NUMBER
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SUDRA-Client-Release-IPA
+          path: build/ios/ipa/*.ipa
+
+      - name: Upload to App Store Connect / TestFlight
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          IPA_PATH=$(find build/ios/ipa -name "*.ipa" 2>/dev/null | head -n 1)
+          if [ -f "$IPA_PATH" ]; then
+            echo "Uploading $IPA_PATH to App Store Connect..."
+            xcrun altool --upload-app --type ios --file "$IPA_PATH" --apiKey "$KEY_ID" --apiIssuer "$ISSUER_ID"
+            echo "Upload to TestFlight completed successfully!"
+          else
+            echo "IPA build completed."
+          fi

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🚚 مندوب بريد السودان | SUDAPOST Captain</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .dual-logo-container {
+      background: #FFFFFF;
+      border: 2px solid #E1EBE4;
+      border-radius: 22px;
+      padding: 8px 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(0,158,73,0.12);
+      margin-bottom: 12px;
+      max-width: 90%;
+    }
+    .dual-logo-img {
+      height: 60px !important;
+      max-height: 60px !important;
+      object-fit: contain !important;
+      max-width: 100% !important;
+      display: block;
+    }
+  </style>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="device-container">
+    <div class="iphone-notch">
+      <div class="camera-lens"></div>
+    </div>
+
+    <div class="screen-wrapper">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <i data-lucide="signal" class="w-3.5 h-3.5"></i>
+          <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+          <i data-lucide="battery" class="w-4 h-4"></i>
+        </div>
+      </div>
+
+      <!-- Live Driver Bar -->
+      <div id="driverLiveBar" style="display:none; background:#0F2418; padding:8px 12px; justify-content:space-between; align-items:center; font-size:11.5px; color:#A7F3D0; border-bottom: 1px solid #1E4631;">
+        <span>🟢 متصل حي بالسيرفر:</span>
+        <span id="driverStatusTag" style="background:#06140D; color:#86EFAC; border:1px solid #009E49; border-radius:6px; padding:3px 8px; font-weight:800;">معتمد ونشط ✅</span>
+      </div>
+
+      <div class="app-body">
+        
+        <!-- ================= 1. SCREEN 1: DRIVER LOGIN ================= -->
+        <div class="view active" id="authDriverLoginView">
+          <div style="text-align: center; margin: 20px 0 16px;">
+            <div class="dual-logo-container">
+              <img src="images/logo.jpg" alt="ربوع طيبة & بريد السودان" class="dual-logo-img">
+            </div>
+            <div style="display:inline-flex; align-items:center; gap:6px; background:#FEF3C7; color:#92400E; border:1px solid #FCD34D; border-radius:20px; padding:4px 12px; font-size:11.5px; font-weight:800; margin-bottom:8px;">
+              <span>🚚 بوابة الكباتن والمناديب</span>
+            </div>
+            <h2 style="font-size: 22px; font-weight: 900; color: var(--text-dark);">تسجيل دخول الكابتن</h2>
+            <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 2px;">تطبيق إدارة وتوصيل طرود بريد السودان</p>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label>البريد الإلكتروني</label>
+            <div class="input-with-icon">
+              <i data-lucide="mail" class="input-icon"></i>
+              <input type="email" id="inDriverLoginEmail" value="driver@sudra.sa" placeholder="captain@domain.com" autocomplete="email">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 8px;">
+            <label>كلمة المرور</label>
+            <div class="input-with-icon">
+              <i data-lucide="lock" class="input-icon"></i>
+              <input type="password" id="inDriverLoginPass" value="123456" placeholder="••••••••" autocomplete="current-password">
+            </div>
+          </div>
+
+          <div style="text-align: left; margin-bottom: 20px;">
+            <a href="javascript:void(0)" onclick="alert('يرجى التواصل مع المشرف في الفرع لاستعادة الحساب')" style="font-size: 12.5px; color: var(--suda-red); font-weight: 700; text-decoration: none;">نسيت كلمة المرور؟</a>
+          </div>
+
+          <button class="glowing-green-cta w-full" onclick="doDriverLogin()">
+            <span>تسجيل الدخول للكابتن 🚀</span>
+            <div class="arrow-circle"><i data-lucide="arrow-left" class="w-4 h-4"></i></div>
+          </button>
+
+          <div style="text-align: center; margin-top: 28px; font-size: 13.5px; color: var(--text-muted);">
+            هل ترغب بالانضمام كأسطول توصيل؟ 
+            <a href="javascript:void(0)" onclick="goToDriverScreen('signup')" style="color: var(--suda-green-dark); font-weight: 800; text-decoration: none;">تسجيل كابتن جديد</a>
+          </div>
+        </div>
+
+        <!-- ================= 2. SCREEN 2: DRIVER SIGN UP ================= -->
+        <div class="view" id="authDriverSignupView">
+          <div style="margin: 14px 0 16px;">
+            <button onclick="goToDriverScreen('login')" style="background:none; border:none; color:var(--text-muted); font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
+              <i data-lucide="chevron-right" class="w-4 h-4"></i> العودة لتسجيل الدخول
+            </button>
+            <h2 style="font-size: 22px; font-weight: 900; color: var(--text-dark); margin-top: 8px;">انضمام كابتن جديد 🚚</h2>
+            <p style="font-size: 12.5px; color: var(--text-muted);">انضم لشبكة التوصيل والشحن الدولي والمحلي</p>
+          </div>
+
+          <div class="form-group">
+            <label>الاسم الكامل للكابتن</label>
+            <div class="input-with-icon">
+              <i data-lucide="user" class="input-icon"></i>
+              <input type="text" id="inDriverSignName" value="أحمد كابتن التوصيل" placeholder="الاسم ثلاثي">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>البريد الإلكتروني</label>
+            <div class="input-with-icon">
+              <i data-lucide="mail" class="input-icon"></i>
+              <input type="email" id="inDriverSignEmail" value="driver@sudra.sa" placeholder="name@domain.com">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>رقم الجوال</label>
+            <div class="input-with-icon">
+              <i data-lucide="phone" class="input-icon"></i>
+              <input type="tel" id="inDriverSignPhone" value="0901234567" placeholder="09xxxxxxxx أو 05xxxxxxxx">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>المدينة ونطاق التغطية</label>
+            <div class="input-with-icon">
+              <i data-lucide="map-pin" class="input-icon"></i>
+              <input type="text" id="inDriverSignCity" value="الخرطوم" placeholder="الخرطوم، بحري، أم درمان، الرياض...">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>نوع ورقم لوحة المركبة</label>
+            <div class="input-with-icon">
+              <i data-lucide="truck" class="input-icon"></i>
+              <input type="text" id="inDriverSignPlate" value="خ 1234 - دباب تويوتا" placeholder="مثال: خ 1234 أو فان هايس">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>كلمة المرور</label>
+            <div class="input-with-icon">
+              <i data-lucide="lock" class="input-icon"></i>
+              <input type="password" id="inDriverSignPass" value="123456" placeholder="••••••••">
+            </div>
+          </div>
+
+          <button class="glowing-green-cta w-full" style="margin-top: 10px;" onclick="doDriverSignUp()">
+            <span>إرسال طلب الانضمام للاعتماد 🚀</span>
+          </button>
+        </div>
+
+        <!-- ================= 3. STATE: PENDING APPROVAL ================= -->
+        <div class="view" id="driverPendingView">
+          <div style="text-align:center; padding:30px 20px 20px;">
+            <div style="width:84px; height:84px; background:#FEF3C7; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin-bottom:16px;">
+              <i data-lucide="clock" style="width:42px; height:42px; color:#D97706;"></i>
+            </div>
+            <h2 style="font-size:21px; font-weight:900; color:var(--text-dark); margin-bottom:6px;">حسابك قيد المراجعة والاعتماد</h2>
+            <p style="font-size:13px; color:var(--text-muted); line-height:1.6;">
+              تم استلام طلب انضمامك كمندوب لبريد السودان بنجاح! 🚚<br>
+              تقوم إدارة البريد بمراجعة بياناتك في لوحة التحكم. ستتمكن من استقبال الطرود وتوصيلها فور تفعيل الحساب من الإدارة.
+            </p>
+
+            <div style="background:#F0FDF4; border:1.5px dashed #86EFAC; border-radius:16px; padding:16px; margin:20px 0; text-align:right;">
+              <div style="font-size:12.5px; margin-bottom:6px;"><strong>👤 المندوب:</strong> <span id="pendName">أحمد كابتن التوصيل</span></div>
+              <div style="font-size:12.5px; margin-bottom:6px;"><strong>✉️ البريد الإلكتروني:</strong> <span id="pendEmail">driver@sudra.sa</span></div>
+              <div style="font-size:12.5px; margin-bottom:6px;"><strong>📞 الجوال:</strong> <span id="pendPhone">0901234567</span></div>
+              <div style="font-size:12.5px; margin-bottom:6px;"><strong>📍 المدينة:</strong> <span id="pendCity">الخرطوم</span></div>
+              <div style="font-size:12.5px;"><strong>⏳ حالة الحساب:</strong> <span style="color:#D97706; font-weight:800;">بانتظار موافقة المشرف في لوحة الإدارة</span></div>
+            </div>
+
+            <button class="glowing-green-cta w-full" style="margin-bottom:12px;" onclick="checkDriverApproval()">
+              <span>🔄 فحص حالة تفعيل الحساب الآن</span>
+            </button>
+
+            <button style="width:100%; padding:12px; background:#F8FAFC; color:#64748B; border:1px solid #CBD5E1; border-radius:12px; font-weight:700; cursor:pointer;" onclick="goToDriverScreen('login')">
+              <span>تسجيل الخروج والعودة 🚪</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ================= 4. STATE: ACTIVE HOME (RECEIVING ORDERS) ================= -->
+        <div class="view" id="driverHome">
+          <div class="view-header driver-head" style="margin-bottom:16px;">
+            <div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <h2 style="font-size:18px; font-weight:900;">شاشة المندوب الحية 🚚</h2>
+                <span class="status-badge loaded" style="font-size:10px;">معتمد ✅</span>
+              </div>
+              <span class="sub-head" style="font-size:12px; color:var(--text-muted);">الطرود المباشرة في ولاية <strong id="driverCityHead">الخرطوم 📍</strong></span>
+            </div>
+          </div>
+          <div class="driver-orders-list" id="driverList"></div>
+        </div>
+
+        <!-- ================= 5. DRIVER PROFILE ================= -->
+        <div class="view" id="driverProfile">
+          <div class="view-header" style="margin-bottom:16px;"><h2>حساب المندوب</h2></div>
+          <div style="background:#fff; border-radius:20px; padding:20px; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.03); margin-bottom:20px; border: 1px solid var(--border-light);">
+            <div class="icon-box" style="width:70px; height:70px; background:#F0FDF4; color:var(--suda-green); border-radius:50%; margin:0 auto 12px; display:flex; align-items:center; justify-content:center;">
+              <i data-lucide="truck" class="w-8 h-8"></i>
+            </div>
+            <h3 style="font-size:17px; font-weight:800;" id="dProfName">أحمد كابتن التوصيل</h3>
+            <p style="font-size:12.5px; color:var(--suda-green-dark); font-weight:700;" id="dProfEmail">driver@sudra.sa</p>
+            <p style="font-size:13px; color:var(--text-muted); margin-top:2px;" id="dProfPhone">0901234567 | الخرطوم 📍</p>
+            <span class="status-badge loaded" style="margin-top:8px; display:inline-block;">مندوب معتمد ونشط 🟢</span>
+          </div>
+
+          <!-- 1. زر حذف حساب السائق -->
+          <button style="width:100%; padding:14px; background:#FEF2F2; color:#DC2626; border:1.5px solid #FCA5A5; border-radius:14px; font-weight:800; cursor:pointer; margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="doDriverDeleteAccount()">
+            <i data-lucide="trash-2" style="width:18px; height:18px;"></i>
+            <span>حذف حساب السائق نهائياً (App Store Requirement)</span>
+          </button>
+
+          <!-- 2. زر تسجيل الخروج تحت زر حذف الحساب -->
+          <button style="width:100%; padding:14px; background:#F8FAFC; color:#334155; border:1.5px solid #CBD5E1; border-radius:14px; font-weight:800; cursor:pointer; margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="doDriverLogout()">
+            <i data-lucide="log-out" style="width:18px; height:18px;"></i>
+            <span>تسجيل الخروج من الحساب 🚪</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Bottom Nav (Hidden until active login) -->
+      <div class="bottom-nav" id="driverNav" style="display:none;">
+        <div class="nav-item active" id="dNavHome" onclick="switchDriverTab('home')">
+          <i data-lucide="truck" class="nav-icon"></i>
+          <span>الطلبات الحية</span>
+        </div>
+        <div class="nav-item" onclick="showDriverWallet()">
+          <i data-lucide="wallet" class="nav-icon"></i>
+          <span>المحفظة</span>
+        </div>
+        <div class="nav-item" id="dNavProfile" onclick="switchDriverTab('profile')">
+          <i data-lucide="user" class="nav-icon"></i>
+          <span>حسابي</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let driverOrders = [];
+    let currentDriverInfo = { id: null, name: 'أحمد كابتن التوصيل', email: 'driver@sudra.sa', phone: '0901234567', city: 'الخرطوم' };
+
+    function goToDriverScreen(s) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('driverNav').style.display = 'none';
+      document.getElementById('driverLiveBar').style.display = 'none';
+
+      if (s === 'login') document.getElementById('authDriverLoginView').classList.add('active');
+      if (s === 'signup') document.getElementById('authDriverSignupView').classList.add('active');
+      if (s === 'pending') {
+        document.getElementById('driverPendingView').classList.add('active');
+        document.getElementById('pendName').innerText = currentDriverInfo.name || 'أحمد كابتن التوصيل';
+        document.getElementById('pendEmail').innerText = currentDriverInfo.email || 'driver@sudra.sa';
+        document.getElementById('pendPhone').innerText = currentDriverInfo.phone || '0901234567';
+        document.getElementById('pendCity').innerText = currentDriverInfo.city || 'الخرطوم';
+      }
+      lucide.createIcons();
+    }
+
+    async function doDriverLogin() {
+      const email = document.getElementById('inDriverLoginEmail').value.trim();
+      const pass = document.getElementById('inDriverLoginPass').value.trim();
+      if (!email || !pass) { alert('الرجاء إدخال البريد الإلكتروني وكلمة المرور'); return; }
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, password: pass })
+        });
+        const data = await res.json();
+
+        if (res.status === 403 && data.data && data.data.isPending) {
+          // Driver registered but pending approval
+          currentDriverInfo = data.data;
+          goToDriverScreen('pending');
+          return;
+        }
+
+        if (data.success && (data.user || data.data)) {
+          const user = data.user || data.data;
+          if (user.role === 'driver') {
+            currentDriverInfo = user;
+            enterDriverMainApp();
+          } else {
+            alert('⚠️ هذا الحساب مسجل كعميل وليس كسائق. يرجى الدخول من تطبيق العميل.');
+          }
+        } else {
+          alert('❌ فشل تسجيل الدخول: ' + (data.message || 'بيانات الدخول غير صحيحة!'));
+        }
+      } catch (e) {
+        alert('حدث خطأ في الاتصال بالخادم: ' + e.message);
+      }
+    }
+
+    async function doDriverSignUp() {
+      const name = document.getElementById('inDriverSignName').value.trim();
+      const email = document.getElementById('inDriverSignEmail').value.trim();
+      const phone = document.getElementById('inDriverSignPhone').value.trim();
+      const city = document.getElementById('inDriverSignCity').value.trim();
+      const plate = document.getElementById('inDriverSignPlate').value.trim();
+      const pass = document.getElementById('inDriverSignPass').value.trim();
+
+      if (!name || !email || !phone || !pass) {
+        alert('الرجاء إدخال كافة البيانات بما فيها الاسم والبريد الإلكتروني ورقم الجوال وكلمة المرور');
+        return;
+      }
+
+      currentDriverInfo = { name, email, phone, city, plate };
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            phone: phone,
+            city: city,
+            vehiclePlate: plate,
+            password: pass,
+            role: 'driver'
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          currentDriverInfo.id = data.user ? data.user.id : null;
+          alert('تم استلام طلب انضمامك بنجاح! حسابك الآن بانتظار موافقة الإدارة في لوحة التحكم 🚚');
+          goToDriverScreen('pending');
+        } else {
+          alert('⚠️ ' + data.message);
+        }
+      } catch (e) {
+        alert('حدث خطأ: ' + e.message);
+      }
+    }
+
+    async function checkDriverApproval() {
+      try {
+        const res = await fetch('/api/drivers');
+        const data = await res.json();
+        if (data.success) {
+          const me = data.data.find(d => (currentDriverInfo.id && d.id === currentDriverInfo.id) || (d.phone === currentDriverInfo.phone) || (d.name === currentDriverInfo.name));
+          if (me && me.active) {
+            alert('🎉 تهانينا! تم تفعيل واعتماد حسابك من قبل الإدارة. يمكنك الآن استقبال وتوصيل الطرود.');
+            currentDriverInfo = { ...currentDriverInfo, ...me };
+            enterDriverMainApp();
+          } else {
+            alert('⏳ حسابك لا يزال بانتظار التفعيل من قبل الإدارة في لوحة التحكم.');
+          }
+        }
+      } catch (e) {
+        alert('تعذر فحص الحالة حالياً: ' + e.message);
+      }
+    }
+
+    function enterDriverMainApp() {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('driverHome').classList.add('active');
+      document.getElementById('driverNav').style.display = 'flex';
+      document.getElementById('driverLiveBar').style.display = 'flex';
+
+      document.getElementById('dProfName').innerText = currentDriverInfo.name || 'أحمد كابتن التوصيل';
+      document.getElementById('dProfEmail').innerText = currentDriverInfo.email || 'driver@sudra.sa';
+      document.getElementById('dProfPhone').innerText = (currentDriverInfo.phone || '0901234567') + ' | ' + (currentDriverInfo.city || 'الخرطوم') + ' 📍';
+      document.getElementById('driverCityHead').innerText = (currentDriverInfo.city || 'الخرطوم') + ' 📍';
+
+      fetchDriverOrders();
+      lucide.createIcons();
+    }
+
+    async function fetchDriverOrders() {
+      try {
+        const res = await fetch('/api/orders');
+        const data = await res.json();
+        if (data.success) {
+          driverOrders = data.data;
+          renderDriver();
+        }
+      } catch (e) {
+        console.error('Error fetching driver orders:', e);
+      }
+    }
+
+    function renderDriver() {
+      const container = document.getElementById('driverList');
+      if (driverOrders.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);">لا توجد طلبات متاحة حالياً</div>';
+        return;
+      }
+
+      container.innerHTML = driverOrders.map(o => {
+        const clientName = o.client_name || o.clientName || o.client || 'عميل';
+        const clientPhone = o.client_phone || o.clientPhone || o.phone || '0551234567';
+        const city = o.city || o.pickupCity || 'الخرطوم';
+        const pkgCount = o.package_count || o.packageCount || o.count || 1;
+        const notes = o.notes || 'لا توجد ملاحظات';
+        const img = o.image_path || o.imagePath || o.image || null;
+
+        let actionBtn = '';
+        if (o.status === 'pending') {
+          actionBtn = `
+            <div class="driver-btn-row">
+              <button class="btn-accept" onclick="acceptOrder('${o.id}')">قبول الطلب الحي ✅</button>
+              <button class="btn-reject" onclick="rejectOrder('${o.id}')">تجاهل ❌</button>
+            </div>
+          `;
+        } else if (o.status === 'accepted') {
+          actionBtn = `
+            <div style="background:#F0FDF4; border: 1px solid #86EFAC; padding:10px; border-radius:12px; margin-top:10px;">
+              <p style="font-size:11px; font-weight:700; color:#15803D; text-align:center; margin-bottom:8px;">أنت الآن في طريقك للعميل. اختر الإجراء عند الوصول:</p>
+              <div class="driver-btn-row" style="margin-top:0;">
+                <button class="btn-loaded" onclick="markLoadedOrder('${o.id}')">تم التحميل ✅</button>
+                <button class="btn-fail" onclick="markFailedOrder('${o.id}')">تعذر الشحن ❌</button>
+              </div>
+            </div>
+          `;
+        }
+        return `
+          <div class="order-card">
+            <div class="order-top">
+              <span class="order-id">بوليصة #${o.order_code || ('ORD-' + o.id)}</span>
+              <span class="status-badge ${o.status}">${getStatusText(o.status)}</span>
+            </div>
+            ${img ? `
+              <div style="margin:10px 0; border-radius:14px; overflow:hidden; border:1.5px solid #E2E8F0; background:#000;">
+                <img src="${img}" style="width:100%; max-height:160px; object-fit:cover; display:block;" onerror="this.style.display='none'">
+                <div style="padding:4px 8px; background:#F8FAFC; font-size:11px; color:#475569; font-weight:700; text-align:center;">📷 صورة الشحنة الملتقطة من العميل</div>
+              </div>
+            ` : ''}
+            <div class="order-details-row">
+              <span>العميل: <strong>${clientName}</strong></span>
+              <span>الجوال: <a href="tel:${clientPhone}" style="color:var(--suda-green-dark); font-weight:800; text-decoration:underline;">${clientPhone} 📞</a></span>
+            </div>
+            <div class="order-details-row">
+              <span>المدينة: <strong>${city} 📍</strong></span>
+              <span>عدد القطع: <strong>${pkgCount} قطعة</strong></span>
+            </div>
+            <div class="order-details-row">
+              <span>الملاحظات: ${notes}</span>
+            </div>
+            ${(o.collected_amount && o.status === 'loaded') || (o.collectedAmount && o.status === 'loaded') ? `
+              <div style="background:#F0FDF4; border:1.5px solid #86EFAC; border-radius:10px; padding:8px 12px; margin-top:8px; font-size:13px; font-weight:800; color:#15803D; display:flex; justify-content:space-between; align-items:center;">
+                <span>المبلغ المستلم من العميل:</span>
+                <span style="font-size:15px;">${Number(o.collected_amount || o.collectedAmount).toLocaleString()} 💵</span>
+              </div>
+            ` : ''}
+            ${o.failReason || o.failure_reason ? `<div style="color:#99001A; font-weight:700; font-size:12px; margin-top:6px;">سبب التعذر: ${o.failReason || o.failure_reason}</div>` : ''}
+            ${actionBtn}
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function getStatusText(s) {
+      if (s === 'pending') return 'بانتظار مندوب ⏳';
+      if (s === 'accepted') return 'تم القبول من المندوب';
+      if (s === 'loaded') return 'تم التحميل بنجاح ✅';
+      if (s === 'failed') return 'تعذر الشحن ❌';
+      return s;
+    }
+
+    async function acceptOrder(id) {
+      try {
+        await fetch('/api/orders/' + id, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: 'accepted',
+            driver: currentDriverInfo.name + ' (' + currentDriverInfo.phone + ')'
+          })
+        });
+        alert('تم قبول الطلب وتحديث حالة العميل ولوحة التحكم فورياً!');
+        fetchDriverOrders();
+      } catch (e) {
+        alert('حدث خطأ: ' + e.message);
+      }
+    }
+
+    async function markLoadedOrder(id) {
+      const amountInput = prompt('💵 تأكيد الاستلام: أدخل المبلغ الذي تم استلامه من العميل نقداً:', '5000');
+      if (amountInput === null) return;
+      const amount = parseFloat(amountInput) || 0;
+
+      try {
+        await fetch('/api/orders/' + id, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            status: 'loaded',
+            collectedAmount: amount
+          })
+        });
+        alert('تم تأكيد تحميل واستلام الشحنة وتسجيل المبلغ المستلم (' + amount.toLocaleString() + ' ج.س/ر.س) بنجاح! ✅');
+        fetchDriverOrders();
+      } catch (e) {
+        alert('حدث خطأ: ' + e.message);
+      }
+    }
+
+    function showDriverWallet() {
+      const total = driverOrders.filter(o => o.status === 'loaded').reduce((acc, o) => acc + (parseFloat(o.collected_amount || o.collectedAmount) || 0), 0);
+      alert('💼 محفظة المندوب:\nإجمالي المبالغ النقدية المستلمة من الشحنات المحملة: ' + total.toLocaleString() + ' ج.س/ر.س 💵');
+    }
+
+    async function markFailedOrder(id) {
+      const reason = prompt('الرجاء إدخال سبب تعذر الشحن:', 'العميل لم يرد على الاتصال');
+      if (reason) {
+        try {
+          await fetch('/api/orders/' + id, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'failed', failReason: reason })
+          });
+          alert('تم توثيق حالة تعذر الشحن وظهورها في لوحة التحكم');
+          fetchDriverOrders();
+        } catch (e) {
+          alert('حدث خطأ: ' + e.message);
+        }
+      }
+    }
+
+    function rejectOrder(id) {
+      driverOrders = driverOrders.filter(x => x.id !== id);
+      renderDriver();
+    }
+
+    function switchDriverTab(t) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      if (t === 'home') {
+        document.getElementById('driverHome').classList.add('active');
+        document.getElementById('dNavHome').classList.add('active');
+      } else {
+        document.getElementById('driverProfile').classList.add('active');
+        document.getElementById('dNavProfile').classList.add('active');
+      }
+      lucide.createIcons();
+    }
+
+    async function doDriverDeleteAccount() {
+      if (confirm('⚠️ تحذير: هل ترغب بحذف حساب السائق وكافة بياناتك وسجلات الرحلات نهائياً وفق متطلبات الخصوصية؟')) {
+        try {
+          await fetch('/api/auth?action=delete_account', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: currentDriverInfo.phone })
+          });
+        } catch (e) {}
+        alert('تم حذف حساب السائق بنجاح.');
+        goToDriverScreen('login');
+      }
+    }
+
+    function doDriverLogout() {
+      if (confirm('هل ترغب بتسجيل الخروج من حساب السائق؟')) {
+        goToDriverScreen('login');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      // Auto-poll orders when active
+      setInterval(() => {
+        if (document.getElementById('driverHome').classList.contains('active')) {
+          fetchDriverOrders();
+        }
+      }, 3000);
+    });
+  </script>
+</body>
+</html>

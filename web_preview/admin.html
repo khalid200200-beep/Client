@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🖥️ لوحة التحكم والإدارة المركزية | بريد السودان & ربوع طيبة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --suda-green: #009E49;
+      --suda-green-dark: #007A3D;
+      --suda-red: #99001A;
+      --dark: #0D1F16;
+      --bg: #F4F8F5;
+      --card: #FFFFFF;
+      --text-muted: #5C7065;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+    body { background: var(--bg); color: var(--dark); min-height: 100vh; }
+
+    .login-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #07170E 0%, #0F2A1C 100%);
+    }
+
+    .login-card {
+      background: #FFFFFF;
+      width: 100%;
+      max-width: 440px;
+      border-radius: 28px;
+      padding: 36px 30px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .login-header { text-align: center; margin-bottom: 24px; }
+    .login-logo { height: 65px; object-fit: contain; margin-bottom: 12px; }
+    .login-title { font-size: 22px; font-weight: 900; color: var(--dark); }
+    .login-sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 800; color: var(--dark); margin-bottom: 6px; }
+    .input-with-icon { position: relative; }
+    .input-with-icon .input-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted); }
+    .form-input { width: 100%; padding: 12px 14px; border: 1.5px solid #CBD5E1; border-radius: 14px; font-size: 13.5px; background: #fff; font-family: inherit; }
+    .input-with-icon .form-input { padding-right: 42px; }
+    .form-input:focus { border-color: var(--suda-green); outline: none; box-shadow: 0 0 0 3px rgba(0, 158, 73, 0.15); }
+
+    .btn-login-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #00B554 0%, #007A3D 100%);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0, 158, 73, 0.35);
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .dashboard-wrapper { display: none; padding: 24px; }
+    .container { max-width: 1280px; margin: 0 auto; }
+    
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fff; padding: 16px 24px; border-radius: 20px; box-shadow: 0 4px 14px rgba(0,0,0,0.03); border: 1px solid #E1EBE4; }
+    .header-logo-group { display: flex; align-items: center; gap: 12px; }
+    .header h1 { font-size: 20px; font-weight: 900; color: var(--dark); }
+    .user-tag { background: #F0FDF4; padding: 6px 14px; border-radius: 12px; font-size: 13px; font-weight: 700; color: var(--suda-green-dark); border: 1px solid #BBF7D0; }
+    .btn-logout { background: #FEF2F2; color: var(--suda-red); border: 1px solid #FCA5A5; padding: 8px 16px; border-radius: 12px; font-size: 12.5px; font-weight: 800; cursor: pointer; }
+
+    .tabs-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }
+    .tab-btn { background: #fff; border: 1.5px solid #E1EBE4; padding: 11px 20px; border-radius: 14px; font-size: 13.5px; font-weight: 800; cursor: pointer; color: #475569; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+    .tab-btn.active { background: linear-gradient(135deg, #00B554 0%, #007A3D 100%); color: #fff; border-color: var(--suda-green); box-shadow: 0 4px 14px rgba(0, 158, 73, 0.3); }
+
+    .tab-view { display: none; }
+    .tab-view.active { display: block; animation: fadeIn 0.2s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 24px; }
+    .stat-box { background: var(--card); padding: 18px; border-radius: 18px; box-shadow: 0 4px 14px rgba(0,0,0,0.03); border-bottom: 4px solid transparent; border: 1px solid #E1EBE4; }
+    .stat-box.primary { border-bottom-color: var(--suda-green); }
+    .stat-box.warning { border-bottom-color: #F59E0B; }
+    .stat-box.info { border-bottom-color: #3B82F6; }
+    .stat-box.success { border-bottom-color: #10B981; }
+    .stat-box.danger { border-bottom-color: var(--suda-red); }
+    .stat-num { font-size: 26px; font-weight: 900; display: block; margin-top: 4px; }
+    .stat-label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+
+    .card { background: var(--card); border-radius: 20px; padding: 24px; box-shadow: 0 4px 14px rgba(0,0,0,0.03); margin-bottom: 24px; border: 1px solid #E1EBE4; }
+    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .card-head h3 { font-size: 18px; font-weight: 800; }
+
+    .form-box { background: #F8FAFC; padding: 18px; border-radius: 16px; margin-bottom: 20px; border: 1px solid #E2E8F0; }
+    .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 14px; }
+    .btn-submit { background: linear-gradient(135deg, #00B554 0%, #007A3D 100%); color: #fff; border: none; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px rgba(0,158,73,0.25); }
+    .btn-activate { background: #16A34A; color: #fff; border: none; font-size: 12px; font-weight: 800; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+    .btn-pause { background: var(--suda-red); color: #fff; border: none; font-size: 12px; font-weight: 800; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+    .btn-delete { color: var(--suda-red); background: none; border: 1px solid #FCA5A5; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer; }
+
+    table { width: 100%; border-collapse: collapse; text-align: right; }
+    th { background: #F0FDF4; padding: 14px 16px; font-size: 13px; color: var(--suda-green-dark); font-weight: 800; border-radius: 8px; }
+    td { padding: 16px; border-bottom: 1px solid #F1F5F9; font-size: 13.5px; }
+    tr:hover td { background: #FAFAFA; }
+
+    .status-badge { padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-block; }
+    .status-loaded { background: #DCFCE7; color: #15803D; }
+    .status-pending { background: #FEF3C7; color: #B45309; }
+    .status-paused { background: #FEF2F2; color: #99001A; }
+
+    .banners-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-top: 16px; }
+    .banner-item { border: 1px solid #E2E8F0; border-radius: 18px; overflow: hidden; background: #fff; }
+    .banner-img { width: 100%; height: 130px; object-fit: cover; }
+    .banner-info { padding: 14px; }
+  </style>
+</head>
+<body>
+
+  <!-- ================= 1. ADMIN LOGIN WITH EMAIL & PASSWORD ================= -->
+  <div class="login-wrapper" id="adminLoginSection">
+    <div class="login-card">
+      <div class="login-header">
+        <img src="images/logo.jpg" alt="ربوع طيبة & بريد السودان" class="login-logo">
+        <h2 class="login-title">تسجيل دخول المشرف والإدارة</h2>
+        <p class="login-sub">المنظومة المركزية | بريد السودان & شركة ربوع طيبة</p>
+      </div>
+
+      <form onsubmit="event.preventDefault(); handleAdminEmailLogin();">
+        <div class="form-group">
+          <label>البريد الإلكتروني للإدارة (Email)</label>
+          <div class="input-with-icon">
+            <i data-lucide="mail" class="input-icon"></i>
+            <input type="email" id="adminEmailInput" class="form-input" placeholder="KHALID200200@GMAIL.COM" value="KHALID200200@GMAIL.COM" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>كلمة المرور (Password)</label>
+          <div class="input-with-icon">
+            <i data-lucide="lock" class="input-icon"></i>
+            <input type="password" id="adminPasswordInput" class="form-input" placeholder="••••••••" value="123456" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-login-submit">
+          <span>تسجيل الدخول للوحة الإدارة 🔐</span>
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= 2. MAIN ADMIN DASHBOARD INTERFACE ================= -->
+  <div class="dashboard-wrapper" id="adminDashboardSection">
+    <div class="container">
+      
+      <!-- Header -->
+      <div class="header">
+        <div class="header-logo-group">
+          <img src="images/logo.jpg" style="height:44px; border-radius:8px; border:1px solid #E2E8F0; padding:2px; background:#fff;">
+          <div>
+            <h1>لوحة التحكم والإدارة المركزية (حي ومباشر 🟢)</h1>
+            <span style="font-size:12px; color:var(--text-muted);">شركة ربوع طيبة 🤝 بريد السودان SUDAPOST</span>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="user-tag" id="currentAdminEmailTag">👤 المشرف: KHALID200200@GMAIL.COM</div>
+          <button class="btn-logout" onclick="handleAdminLogout()">تسجيل الخروج 🚪</button>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="tabs-bar">
+        <button class="tab-btn active" onclick="switchAdminTab('orders')">
+          <i data-lucide="package"></i>
+          <span>سجل وحالات الطرود والشحنات</span>
+        </button>
+        <button class="tab-btn" onclick="switchAdminTab('drivers')">
+          <i data-lucide="truck"></i>
+          <span>إدارة واعتماد المندوبين (<span id="countDrivers">2</span>)</span>
+          <span id="pendingBadge" style="background:var(--suda-red); color:#fff; padding:2px 8px; border-radius:10px; font-size:11px; margin-right:4px;">1 بانتظار الاعتماد</span>
+        </button>
+        <button class="tab-btn" onclick="switchAdminTab('clients')">
+          <i data-lucide="users"></i>
+          <span>إدارة حسابات العملاء (<span id="countClients">2</span>)</span>
+        </button>
+        <button class="tab-btn" onclick="switchAdminTab('banners')">
+          <i data-lucide="image"></i>
+          <span>إدارة وتغيير بانرات وعروض البريد</span>
+        </button>
+      </div>
+
+      <!-- KPI Statistics -->
+      <div class="stats-grid">
+        <div class="stat-box primary"><span class="stat-label">إجمالي الطرود الحية</span><span class="stat-num" id="statOrders">0</span></div>
+        <div class="stat-box warning"><span class="stat-label">بانتظار مندوب</span><span class="stat-num" id="statPending">0</span></div>
+        <div class="stat-box info"><span class="stat-label">مقبولة من المندوب</span><span class="stat-num" id="statAccepted">0</span></div>
+        <div class="stat-box success"><span class="stat-label">تم الاستلام والتسليم ✅</span><span class="stat-num" id="statLoaded">0</span></div>
+        <div class="stat-box danger"><span class="stat-label">مندوبين بانتظار الاعتماد</span><span class="stat-num" id="statPendingDrivers">0</span></div>
+        <div class="stat-box info"><span class="stat-label">المندوبين المعتمدين</span><span class="stat-num" id="statActiveDrivers">0</span></div>
+      </div>
+
+      <!-- TAB 1: ORDERS -->
+      <div class="tab-view active" id="view-orders">
+        <div class="card">
+          <div class="card-head"><h3>سجل وحالات طرود بريد السودان وربوع طيبة الحية</h3></div>
+          <table>
+            <thead>
+              <tr>
+                <th>كود الطرد</th>
+                <th>صورة الطرد 📷</th>
+                <th>المرسل / العميل</th>
+                <th>رقم الجوال</th>
+                <th>المدينة</th>
+                <th>عدد القطع</th>
+                <th>المندوب المعين</th>
+                <th>الملاحظات / سبب التعذر</th>
+                <th>الحالة الحالية</th>
+                <th>تعديل الحالة فورياً</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 2: DRIVERS -->
+      <div class="tab-view" id="view-drivers">
+        <div class="card">
+          <div class="card-head">
+            <h3>🚚 إدارة واعتماد وتفعيل مناديب وكباتن التوصيل</h3>
+            <span style="font-size:12.5px; color:var(--text-muted);">تحكم مباشر في تشغيل أو إيقاف استقبال الطرود لأي مندوب</span>
+          </div>
+
+          <div class="form-box">
+            <h4 style="font-size:14px; margin-bottom:12px;">+ تسجيل مندوب جديد (يتم إدراجه قيد المراجعة حتى تعتمده)</h4>
+            <div class="form-row">
+              <div class="form-group"><label>اسم المندوب</label><input type="text" id="addDriverName" class="form-input" placeholder="عثمان الفكي"></div>
+              <div class="form-group"><label>رقم الجوال</label><input type="text" id="addDriverPhone" class="form-input" placeholder="09xxxxxxxx"></div>
+              <div class="form-group"><label>الولاية / الفرع</label><input type="text" id="addDriverCity" class="form-input" value="الخرطوم"></div>
+              <div class="form-group"><label>لوحة المركبة</label><input type="text" id="addDriverPlate" class="form-input" placeholder="خ 56789"></div>
+            </div>
+            <button class="btn-submit" onclick="saveNewDriver()">+ تسجيل المندوب (قيد المراجعة)</button>
+          </div>
+
+          <table>
+            <thead>
+              <tr><th>اسم المندوب</th><th>رقم الجوال</th><th>الولاية</th><th>لوحة المركبة</th><th>حالة الحساب</th><th>التحكم والتشغيل</th><th>إجراء</th></tr>
+            </thead>
+            <tbody id="driversTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 3: CLIENTS -->
+      <div class="tab-view" id="view-clients">
+        <div class="card">
+          <div class="card-head"><h3>👥 إدارة حسابات العملاء الحية</h3></div>
+          <div class="form-box">
+            <h4 style="font-size:14px; margin-bottom:12px;">+ إضافة حساب عميل جديد</h4>
+            <div class="form-row">
+              <div class="form-group"><label>اسم العميل</label><input type="text" id="addClientName" class="form-input" placeholder="خالد محمد"></div>
+              <div class="form-group"><label>رقم الجوال</label><input type="text" id="addClientPhone" class="form-input" placeholder="09xxxxxxxx"></div>
+              <div class="form-group"><label>المدينة</label><input type="text" id="addClientCity" class="form-input" value="الخرطوم"></div>
+            </div>
+            <button class="btn-submit" onclick="saveNewClient()">+ إنشاء وتفعيل حساب العميل</button>
+          </div>
+
+          <table>
+            <thead>
+              <tr><th>اسم العميل</th><th>رقم الجوال</th><th>المدينة</th><th>الدور</th><th>الحالة</th><th>إجراء</th></tr>
+            </thead>
+            <tbody id="clientsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 4: BANNERS -->
+      <div class="tab-view" id="view-banners">
+        <div class="card">
+          <div class="card-head"><h3>🖼️ إدارة وتغيير بانرات وعروض الشحن (تظهر فوراً في تطبيق العميل)</h3></div>
+          <div class="form-box">
+            <h4 style="font-size:14px; margin-bottom:12px;">+ إضافة بانر وعرض ترويجي جديد</h4>
+            <div class="form-row">
+              <div class="form-group"><label>عنوان البانر</label><input type="text" id="inBannerTitle" class="form-input" placeholder="شحنك يصل أينما كنت"></div>
+              <div class="form-group"><label>الوصف الفرعي</label><input type="text" id="inBannerSub" class="form-input" placeholder="أسرع خدمة توصيل بين الولايات"></div>
+              <div class="form-group"><label>شارة العرض</label><input type="text" id="inBannerBadge" class="form-input" value="SUDAPOST ⭐"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group" style="grid-column: span 2;"><label>رابط الصورة</label><input type="url" id="inBannerImg" class="form-input" value="images/banner1.jpg"></div>
+              <div class="form-group"><label>نص الزر</label><input type="text" id="inBannerBtn" class="form-input" value="اطلب شحن الآن"></div>
+            </div>
+            <button class="btn-submit" onclick="addAdminBanner()">حفظ ونشر البانر 🚀</button>
+          </div>
+          <div class="banners-grid" id="adminBannersGrid"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let adminDrivers = [];
+    let adminClients = [];
+    let adminOrders = [];
+    let adminBanners = [];
+
+    // ================= REAL API INTEGRATION =================
+    async function fetchAllAdminData() {
+      try {
+        const [ordRes, drvRes, cliRes, banRes] = await Promise.all([
+          fetch('/api/orders').then(r => r.json()),
+          fetch('/api/drivers').then(r => r.json()),
+          fetch('/api/clients').then(r => r.json()),
+          fetch('/api/banners').then(r => r.json())
+        ]);
+
+        if (ordRes.success) adminOrders = ordRes.data;
+        if (drvRes.success) adminDrivers = drvRes.data;
+        if (cliRes.success) adminClients = cliRes.data;
+        if (banRes.success) adminBanners = banRes.data;
+
+        renderAll();
+      } catch (e) {
+        console.error('Error fetching admin data:', e);
+      }
+    }
+
+    async function handleAdminEmailLogin() {
+      const email = document.getElementById('adminEmailInput').value.trim();
+      const pass = document.getElementById('adminPasswordInput').value.trim();
+
+      if (!email || !pass) { alert('الرجاء إدخال البريد الإلكتروني وكلمة المرور'); return; }
+
+      try {
+        const res = await fetch('/api/auth/admin-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, password: pass })
+        });
+        const data = await res.json();
+
+        if (data.success && data.admin) {
+          document.getElementById('adminLoginSection').style.display = 'none';
+          document.getElementById('adminDashboardSection').style.display = 'block';
+          document.getElementById('currentAdminEmailTag').innerText = '👤 المشرف: ' + data.admin.email;
+          fetchAllAdminData();
+          lucide.createIcons();
+        } else {
+          alert('❌ فشل تسجيل دخول الإدارة: ' + (data.message || 'بيانات المشرف غير صحيحة! تأكد من البريد الإلكتروني وكلمة المرور.'));
+        }
+      } catch (e) {
+        alert('حدث خطأ في الاتصال بالخادم: ' + e.message);
+      }
+    }
+
+    function handleAdminLogout() {
+      if (confirm('هل ترغب بتسجيل الخروج من لوحة التحكم؟')) {
+        document.getElementById('adminDashboardSection').style.display = 'none';
+        document.getElementById('adminLoginSection').style.display = 'flex';
+        lucide.createIcons();
+      }
+    }
+
+    function switchAdminTab(t) {
+      document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('view-' + t).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+
+    function renderAll() {
+      renderDriversTable();
+      renderOrdersTable();
+      renderClientsTable();
+      renderBannersGrid();
+      updateCounts();
+      lucide.createIcons();
+    }
+
+    function updateCounts() {
+      const pendingCount = adminDrivers.filter(d => !d.active).length;
+      const activeCount = adminDrivers.filter(d => d.active).length;
+      document.getElementById('countDrivers').innerText = adminDrivers.length;
+      document.getElementById('statPendingDrivers').innerText = pendingCount;
+      document.getElementById('statActiveDrivers').innerText = activeCount;
+      document.getElementById('pendingBadge').style.display = pendingCount > 0 ? 'inline-block' : 'none';
+      document.getElementById('pendingBadge').innerText = pendingCount + ' بانتظار الاعتماد';
+
+      document.getElementById('countClients').innerText = adminClients.length;
+      document.getElementById('statOrders').innerText = adminOrders.length;
+      document.getElementById('statPending').innerText = adminOrders.filter(o => o.status === 'pending').length;
+      document.getElementById('statAccepted').innerText = adminOrders.filter(o => o.status === 'accepted').length;
+      document.getElementById('statLoaded').innerText = adminOrders.filter(o => o.status === 'loaded').length;
+    }
+
+    function renderDriversTable() {
+      const tb = document.getElementById('driversTableBody');
+      tb.innerHTML = adminDrivers.map(d => `
+        <tr>
+          <td><strong>🚚 ${d.name}</strong></td>
+          <td>${d.phone}</td>
+          <td>${d.city} 📍</td>
+          <td><strong>${d.plate}</strong></td>
+          <td>
+            ${d.active 
+              ? '<span class="status-badge status-loaded">معتمد ونشط (يستقبل الطلبات) ✅</span>'
+              : '<span class="status-badge status-paused">موقوف / بانتظار الاعتماد ⛔</span>'
+            }
+          </td>
+          <td>
+            ${d.active
+              ? `<button class="btn-pause" onclick="toggleDriverActive(${d.id}, false)">⛔ إيقاف الحساب</button>`
+              : `<button class="btn-activate" onclick="toggleDriverActive(${d.id}, true)">✅ تفعيل وتشغيل الحساب</button>`
+            }
+          </td>
+          <td>
+            <button class="btn-delete" onclick="deleteDriver(${d.id})">حذف 🗑️</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function toggleDriverActive(id, activate) {
+      try {
+        await fetch('/api/drivers/' + id, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ active: activate })
+        });
+        alert(activate ? 'تم اعتماد وتفعيل حساب المندوب بنجاح في السيرفر!' : 'تم إيقاف حساب المندوب.');
+        fetchAllAdminData();
+      } catch (e) {
+        alert('حدث خطأ: ' + e.message);
+      }
+    }
+
+    async function saveNewDriver() {
+      const name = document.getElementById('addDriverName').value.trim();
+      const phone = document.getElementById('addDriverPhone').value.trim();
+      const city = document.getElementById('addDriverCity').value.trim();
+      const plate = document.getElementById('addDriverPlate').value.trim() || 'خ 1234';
+      if (!name || !phone) { alert('الرجاء إدخال اسم ورقم جوال المندوب'); return; }
+
+      try {
+        await fetch('/api/drivers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, phone, city, plate })
+        });
+        document.getElementById('addDriverName').value = '';
+        document.getElementById('addDriverPhone').value = '';
+        document.getElementById('addDriverPlate').value = '';
+        alert('تم تسجيل المندوب بنجاح (بانتظار الاعتماد).');
+        fetchAllAdminData();
+      } catch (e) {
+        alert('حدث خطأ: ' + e.message);
+      }
+    }
+
+    async function deleteDriver(id) {
+      if (confirm('حذف حساب هذا المندوب نهائياً؟')) {
+        try {
+          await fetch('/api/drivers/' + id, { method: 'DELETE' });
+          fetchAllAdminData();
+        } catch (e) {}
+      }
+    }
+
+    function renderClientsTable() {
+      const tb = document.getElementById('clientsTableBody');
+      tb.innerHTML = adminClients.map(c => `
+        <tr>
+          <td><strong>👤 ${c.name}</strong></td>
+          <td>${c.phone}</td>
+          <td>${c.city} 📍</td>
+          <td><span style="color:var(--suda-green-dark); font-weight:700;">عميل بريد</span></td>
+          <td><span class="status-badge status-loaded">نشط ✅</span></td>
+          <td><button class="btn-delete" onclick="deleteClient(${c.id})">حذف 🗑️</button></td>
+        </tr>
+      `).join('');
+    }
+
+    async function saveNewClient() {
+      const name = document.getElementById('addClientName').value.trim();
+      const phone = document.getElementById('addClientPhone').value.trim();
+      const city = document.getElementById('addClientCity').value.trim();
+      if (!name || !phone) { alert('الرجاء إدخال الاسم ورقم الجوال'); return; }
+
+      try {
+        await fetch('/api/clients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, phone, city })
+        });
+        document.getElementById('addClientName').value = '';
+        document.getElementById('addClientPhone').value = '';
+        alert('تم إنشاء حساب العميل بنجاح');
+        fetchAllAdminData();
+      } catch (e) {}
+    }
+
+    async function deleteClient(id) {
+      if (confirm('حذف هذا العميل؟')) {
+        try {
+          await fetch('/api/clients/' + id, { method: 'DELETE' });
+          fetchAllAdminData();
+        } catch (e) {}
+      }
+    }
+
+    function renderOrdersTable() {
+      const tb = document.getElementById('ordersTableBody');
+      tb.innerHTML = adminOrders.map((o) => `
+        <tr>
+          <td><strong>#${o.id}</strong></td>
+          <td>
+            ${o.image ? `<img src="${o.image}" style="width:50px; height:50px; object-fit:cover; border-radius:10px; border:1.5px solid #CBD5E1; cursor:pointer;" onclick="window.open('${o.image}', '_blank')" title="اضغط لمعاينة الصورة بالحجم الكامل">` : '<span style="color:#94A3B8; font-size:11px;">لا توجد صورة</span>'}
+          </td>
+          <td>${o.client}</td>
+          <td>${o.phone}</td>
+          <td>${o.city} 📍</td>
+          <td><strong>${o.count}</strong></td>
+          <td>${o.driver}</td>
+          <td>${o.failReason ? '<span style="color:var(--suda-red); font-weight:700;">تعذر: ' + o.failReason + '</span>' : o.notes}</td>
+          <td><span class="status-badge status-${o.status}">${o.status}</span></td>
+          <td>
+            <select onchange="updateOrderStatus('${o.id}', this.value)" style="padding:4px 8px; border-radius:8px;">
+              <option value="pending" ${o.status=='pending'?'selected':''}>بانتظار مندوب</option>
+              <option value="accepted" ${o.status=='accepted'?'selected':''}>تم القبول</option>
+              <option value="loaded" ${o.status=='loaded'?'selected':''}>تم الاستلام والتحميل</option>
+              <option value="failed" ${o.status=='failed'?'selected':''}>تعذر التوصيل</option>
+            </select>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function updateOrderStatus(id, newStatus) {
+      try {
+        await fetch('/api/orders/' + id, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        fetchAllAdminData();
+      } catch (e) {}
+    }
+
+    function renderBannersGrid() {
+      const grid = document.getElementById('adminBannersGrid');
+      grid.innerHTML = adminBanners.map(b => `
+        <div class="banner-item">
+          <img src="${b.img}" class="banner-img" onerror="this.src='images/banner1.jpg'">
+          <div class="banner-info">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span class="badge-tag" style="background:#FEF2F2; color:var(--suda-red); font-size:11px; font-weight:700; padding:2px 8px; border-radius:8px;">${b.badge}</span>
+              <button class="btn-delete" onclick="deleteBanner(${b.id})">حذف 🗑️</button>
+            </div>
+            <h4>${b.title}</h4>
+            <p style="font-size:12px; color:var(--text-muted);">${b.subtitle}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function addAdminBanner() {
+      const t = document.getElementById('inBannerTitle').value.trim();
+      const s = document.getElementById('inBannerSub').value.trim();
+      const bg = document.getElementById('inBannerBadge').value.trim() || 'SUDAPOST ⭐';
+      const im = document.getElementById('inBannerImg').value.trim();
+      const bt = document.getElementById('inBannerBtn').value.trim() || 'اطلب شحن الآن';
+      if (!t || !im) { alert('الرجاء كتابة العنوان ورابط الصورة'); return; }
+
+      try {
+        await fetch('/api/banners', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: t, subtitle: s, badge: bg, img: im, btn: bt })
+        });
+        alert('تمت إضافة البانر ونشره فورياً في تطبيق العميل 🚀');
+        fetchAllAdminData();
+      } catch (e) {}
+    }
+
+    async function deleteBanner(id) {
+      if (confirm('حذف هذا البانر من تطبيق العميل؟')) {
+        try {
+          await fetch('/api/banners/' + id, { method: 'DELETE' });
+          fetchAllAdminData();
+        } catch (e) {}
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      // Auto-poll admin data every 2.5 seconds
+      setInterval(() => {
+        if (document.getElementById('adminDashboardSection').style.display === 'block') {
+          fetchAllAdminData();
+        }
+      }, 2500);
+    });
+  </script>
+</body>
+</html>
