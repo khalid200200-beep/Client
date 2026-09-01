@@ -19,7 +19,7 @@ on:
 
 jobs:
   build-and-release-ios:
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 60
 
     strategy:
@@ -44,8 +44,9 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Verify Flutter & CocoaPods
+      - name: Verify Flutter, Xcode & CocoaPods
         run: |
+          xcodebuild -version
           flutter doctor -v
           pod --version
 

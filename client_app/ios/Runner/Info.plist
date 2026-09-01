@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>SUDRA</string>
+	<string>client_app</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -24,8 +24,11 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+
+	<!-- أذونات الخصوصية المعتمدة لمتجر آبل -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>يحتاج تطبيق سودرا للوصول إلى موقعك لتحديد عنوان الاستلام والتسليم بدقة وتسهيل إنشاء طلبات الشحن.</string>
 	
-	<!-- متطلبات وأذونات الخصوصية لمتجر App Store -->
 	<key>NSCameraUsageDescription</key>
 	<string>يحتاج تطبيق سودرا للوصول إلى الكاميرا لالتقاط صور الشحنات والطرود وإرفاقها مع تفاصيل الطلب.</string>
 	
@@ -36,6 +39,8 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -43,6 +48,15 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
