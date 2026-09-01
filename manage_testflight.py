@@ -70,98 +70,51 @@ def api_request(method, path, body=None):
         except:
             return {"error": err_msg, "status": e.code}
 
-print(f"=== 1. Checking / Inviting User {TARGET_EMAIL} to App Store Connect Team ===")
+print("=== 1. Checking User Invitations ===")
+inv_res = api_request("GET", "/v1/userInvitations")
+invs = inv_res.get("data", [])
+print(f"Found {len(invs)} pending user invitations:")
+for inv in invs:
+    attrs = inv.get('attributes', {})
+    print(f" - Invitation ID: {inv.get('id')} | Email: {attrs.get('email')} | Roles: {attrs.get('roles')} | Expiration: {attrs.get('expirationDate')}")
+
+print("\n=== 2. Checking Team Users ===")
 users_res = api_request("GET", "/v1/users")
 users = users_res.get("data", [])
-user_found = False
 for u in users:
     attrs = u.get('attributes', {})
-    if attrs.get('username', '').lower() == TARGET_EMAIL.lower():
-        user_found = True
-        print(f"✅ User {TARGET_EMAIL} already exists in App Store Connect team.")
+    print(f" - User: {attrs.get('firstName')} {attrs.get('lastName')} | Email: {attrs.get('username')} | Roles: {attrs.get('roles')}")
 
-if not user_found:
-    print(f"Checking pending invitations...")
-    inv_res = api_request("GET", "/v1/userInvitations")
-    inv_data = inv_res.get("data", [])
-    already_invited = any(i.get('attributes', {}).get('email', '').lower() == TARGET_EMAIL.lower() for i in inv_data)
-    if already_invited:
-        print(f"✅ Invitation already sent to {TARGET_EMAIL} as ADMIN.")
-    else:
-        print(f"Inviting {TARGET_EMAIL} to App Store Connect with ADMIN role...")
-        inv_payload = {
-            "data": {
-                "type": "userInvitations",
-                "attributes": {
-                    "email": TARGET_EMAIL,
-                    "firstName": "Khalid",
-                    "lastName": "Owner",
-                    "roles": ["ADMIN"],
-                    "allAppsVisible": True
-                }
-            }
-        }
-        res = api_request("POST", "/v1/userInvitations", inv_payload)
-        print(f"Invitation response: {res}")
+print("\n=== 3. Checking Beta Testers ===")
+testers_res = api_request("GET", "/v1/betaTesters")
+testers = testers_res.get("data", [])
+print(f"Found {len(testers)} total beta testers:")
+for t in testers:
+    attrs = t.get('attributes', {})
+    print(f" - Tester ID: {t.get('id')} | Email: {attrs.get('email')} | Name: {attrs.get('firstName')} {attrs.get('lastName')} | State: {attrs.get('inviteType')}")
 
-print("\n=== 2. Fetching Apps & Internal Groups ===")
-apps_res = api_request("GET", "/v1/apps")
-apps = apps_res.get("data", [])
+# Delete old pending invitations for TARGET_EMAIL and recreate fresh invitation
+for inv in invs:
+    if inv.get('attributes', {}).get('email', '').lower() == TARGET_EMAIL.lower():
+        inv_id = inv.get('id')
+        print(f"Deleting stale invitation {inv_id} for {TARGET_EMAIL}...")
+        api_request("DELETE", f"/v1/userInvitations/{inv_id}")
 
-internal_group_ids = []
-for app in apps:
-    app_id = app['id']
-    app_name = app.get('attributes', {}).get('name')
-    groups_res = api_request("GET", f"/v1/betaGroups?filter[app]={app_id}")
-    for g in groups_res.get("data", []):
-        if g.get('attributes', {}).get('isInternalGroup'):
-            internal_group_ids.append(g['id'])
-            print(f"Found internal group for {app_name}: {g['id']}")
-
-print(f"\n=== 3. Registering Beta Tester {TARGET_EMAIL} ===")
-tester_check = api_request("GET", f"/v1/betaTesters?filter[email]={TARGET_EMAIL}")
-tester_data = tester_check.get("data", [])
-
-if len(tester_data) == 0 and len(internal_group_ids) > 0:
-    first_gid = internal_group_ids[0]
-    create_payload = {
-        "data": {
-            "type": "betaTesters",
-            "attributes": {
-                "email": TARGET_EMAIL,
-                "firstName": "Khalid",
-                "lastName": "Tester"
-            },
-            "relationships": {
-                "betaGroups": {
-                    "data": [
-                        {
-                            "type": "betaGroups",
-                            "id": first_gid
-                        }
-                    ]
-                }
-            }
+print(f"\nCreating FRESH user invitation for {TARGET_EMAIL}...")
+fresh_inv_payload = {
+    "data": {
+        "type": "userInvitations",
+        "attributes": {
+            "email": TARGET_EMAIL,
+            "firstName": "Khalid",
+            "lastName": "User",
+            "roles": ["ADMIN"],
+            "allAppsVisible": True
         }
     }
-    c_res = api_request("POST", "/v1/betaTesters", create_payload)
-    print(f"Create tester result: {c_res}")
-    if "data" in c_res:
-        tester_data = [c_res["data"]]
+}
+fresh_res = api_request("POST", "/v1/userInvitations", fresh_inv_payload)
+print(f"Fresh invitation created: {fresh_res}")
 
-if len(tester_data) > 0:
-    t_id = tester_data[0]["id"]
-    for gid in internal_group_ids:
-        rel_res = api_request("POST", f"/v1/betaGroups/{gid}/relationships/betaTesters", {
-            "data": [{"type": "betaTesters", "id": t_id}]
-        })
-        print(f"Associated tester {t_id} to group {gid}: {rel_res}")
-
-print("\n" + "="*60)
-print(f"INVITATION CONFIRMATION FOR: {TARGET_EMAIL}")
-print("="*60)
-print("1. App Store Connect Team Invitation (Admin): SENT")
-print("2. SUDRA Customer (Build 2) TestFlight Access: ENABLED")
-print("3. SUDRA Captain (Build 2) TestFlight Access: ENABLED")
-print("4. Official Apple TestFlight Email: SENT")
-print("="*60)
+print("\n=== 4. Checking Primary Developer Email ===")
+print("Note: The main Apple Developer account holder is waildaoudi01@gmail.com.")
