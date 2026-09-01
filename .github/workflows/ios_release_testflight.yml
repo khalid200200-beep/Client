@@ -37,10 +37,10 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Flutter SDK
+      - name: Set up Flutter SDK (Matching Local 3.47.1 Stable)
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.27.x'
+          flutter-version: '3.47.1'
           channel: 'stable'
           cache: true
 
@@ -49,9 +49,10 @@ jobs:
           flutter doctor -v
           pod --version
 
-      - name: Install Dependencies
+      - name: Clean & Install Dependencies
         working-directory: ${{ matrix.app }}
         run: |
+          flutter clean
           flutter pub get
           flutter test
 
