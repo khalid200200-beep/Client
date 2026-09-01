@@ -18,7 +18,6 @@ except ImportError:
 KEY_ID = os.environ.get("KEY_ID")
 ISSUER_ID = os.environ.get("ISSUER_ID")
 PRIVATE_KEY = os.environ.get("APP_STORE_CONNECT_PRIVATE_KEY")
-TARGET_EMAIL = "nnooonn200200@gmail.com"
 
 if not KEY_ID or not ISSUER_ID or not PRIVATE_KEY:
     print("❌ Error: Missing App Store Connect API credentials.")
@@ -70,51 +69,98 @@ def api_request(method, path, body=None):
         except:
             return {"error": err_msg, "status": e.code}
 
-print("=== 1. Checking User Invitations ===")
-inv_res = api_request("GET", "/v1/userInvitations")
-invs = inv_res.get("data", [])
-print(f"Found {len(invs)} pending user invitations:")
-for inv in invs:
-    attrs = inv.get('attributes', {})
-    print(f" - Invitation ID: {inv.get('id')} | Email: {attrs.get('email')} | Roles: {attrs.get('roles')} | Expiration: {attrs.get('expirationDate')}")
+print("=== 1. Detailed Inspection of Apps and Builds ===")
+apps_res = api_request("GET", "/v1/apps")
+apps = apps_res.get("data", [])
 
-print("\n=== 2. Checking Team Users ===")
-users_res = api_request("GET", "/v1/users")
-users = users_res.get("data", [])
-for u in users:
-    attrs = u.get('attributes', {})
-    print(f" - User: {attrs.get('firstName')} {attrs.get('lastName')} | Email: {attrs.get('username')} | Roles: {attrs.get('roles')}")
+for app in apps:
+    app_id = app['id']
+    app_name = app.get('attributes', {}).get('name')
+    print(f"\n========================================================")
+    print(f"APP: {app_name} (ID: {app_id})")
+    print(f"========================================================")
 
-print("\n=== 3. Checking Beta Testers ===")
-testers_res = api_request("GET", "/v1/betaTesters")
-testers = testers_res.get("data", [])
-print(f"Found {len(testers)} total beta testers:")
-for t in testers:
-    attrs = t.get('attributes', {})
-    print(f" - Tester ID: {t.get('id')} | Email: {attrs.get('email')} | Name: {attrs.get('firstName')} {attrs.get('lastName')} | State: {attrs.get('inviteType')}")
+    # 1. Builds with relationships
+    builds_res = api_request("GET", f"/v1/builds?filter[app]={app_id}&include=betaBuildLocalizations,buildBetaDetail,preReleaseVersion&limit=5")
+    builds = builds_res.get("data", [])
+    included = builds_res.get("included", [])
+    
+    print(f"Found {len(builds)} builds:")
+    for b in builds:
+        attrs = b.get('attributes', {})
+        b_id = b['id']
+        version = attrs.get('version')
+        state = attrs.get('processingState')
+        expired = attrs.get('expired')
+        min_os = attrs.get('minOsVersion')
+        uses_non_exempt = attrs.get('usesNonExemptEncryption')
+        
+        print(f"\n -> Build {version} (ID: {b_id}):")
+        print(f"    - Processing State: {state}")
+        print(f"    - Expired: {expired}")
+        print(f"    - Uses Non Exempt Encryption: {uses_non_exempt}")
+        
+        # Check if missing encryption compliance
+        if uses_non_exempt is None:
+            print(f"    ⚠️ Encryption compliance NOT set! Setting usesNonExemptEncryption to False...")
+            patch_enc = {
+                "data": {
+                    "type": "builds",
+                    "id": b_id,
+                    "attributes": {
+                        "usesNonExemptEncryption": False
+                    }
+                }
+            }
+            res_enc = api_request("PATCH", f"/v1/builds/{b_id}", patch_enc)
+            print(f"    Encryption patch response: {res_enc}")
 
-# Delete old pending invitations for TARGET_EMAIL and recreate fresh invitation
-for inv in invs:
-    if inv.get('attributes', {}).get('email', '').lower() == TARGET_EMAIL.lower():
-        inv_id = inv.get('id')
-        print(f"Deleting stale invitation {inv_id} for {TARGET_EMAIL}...")
-        api_request("DELETE", f"/v1/userInvitations/{inv_id}")
+        # Check betaBuildLocalizations (What to test)
+        loc_res = api_request("GET", f"/v1/builds/{b_id}/betaBuildLocalizations")
+        locs = loc_res.get("data", [])
+        print(f"    - Beta Localizations count: {len(locs)}")
+        if len(locs) == 0:
+            print(f"    Creating 'What to test' localization for build {version}...")
+            create_loc = {
+                "data": {
+                    "type": "betaBuildLocalizations",
+                    "attributes": {
+                        "locale": "en-US",
+                        "whatsNew": "Initial internal test build for SUDRA."
+                    },
+                    "relationships": {
+                        "build": {
+                            "data": {
+                                "type": "builds",
+                                "id": b_id
+                            }
+                        }
+                    }
+                }
+            }
+            res_loc = api_request("POST", "/v1/betaBuildLocalizations", create_loc)
+            print(f"    Localization result: {res_loc}")
 
-print(f"\nCreating FRESH user invitation for {TARGET_EMAIL}...")
-fresh_inv_payload = {
-    "data": {
-        "type": "userInvitations",
-        "attributes": {
-            "email": TARGET_EMAIL,
-            "firstName": "Khalid",
-            "lastName": "User",
-            "roles": ["ADMIN"],
-            "allAppsVisible": True
-        }
-    }
-}
-fresh_res = api_request("POST", "/v1/userInvitations", fresh_inv_payload)
-print(f"Fresh invitation created: {fresh_res}")
+    # 2. Beta Groups & Testers
+    groups_res = api_request("GET", f"/v1/betaGroups?filter[app]={app_id}&include=betaTesters,builds")
+    groups = groups_res.get("data", [])
+    print(f"\nBeta Groups for {app_name}:")
+    for g in groups:
+        g_id = g['id']
+        g_attrs = g.get('attributes', {})
+        print(f" -> Group: {g_attrs.get('name')} | isInternal: {g_attrs.get('isInternalGroup')} | hasAccessToAllBuilds: {g_attrs.get('hasAccessToAllBuilds')} | ID: {g_id}")
+        
+        # Check testers in group
+        g_testers_res = api_request("GET", f"/v1/betaGroups/{g_id}/betaTesters")
+        g_testers = g_testers_res.get("data", [])
+        print(f"    Testers in group ({len(g_testers)}):")
+        for gt in g_testers:
+            gt_attrs = gt.get('attributes', {})
+            print(f"      * {gt_attrs.get('email')} ({gt_attrs.get('firstName')} {gt_attrs.get('lastName')}) | ID: {gt['id']}")
 
-print("\n=== 4. Checking Primary Developer Email ===")
-print("Note: The main Apple Developer account holder is waildaoudi01@gmail.com.")
+        # Check builds in group
+        g_builds_res = api_request("GET", f"/v1/betaGroups/{g_id}/builds")
+        g_builds = g_builds_res.get("data", [])
+        print(f"    Builds in group: {[gb.get('attributes',{}).get('version') for gb in g_builds]}")
+
+print("\n=== Inspection and Auto-Repair Completed ===")
