@@ -536,22 +536,24 @@ if ($pdo) {
                                 <!-- زر الحظر / التفعيل -->
                                 <form method="POST" style="display:inline; margin:0;">
                                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="hidden" name="toggle_user_action" value="1">
                                     <input type="hidden" name="user_id" value="<?php echo intval($d['id']); ?>">
                                     <input type="hidden" name="user_role" value="driver">
                                     <input type="hidden" name="set_state" value="<?php echo $isActive ? '0' : '1'; ?>">
                                     <?php if ($isActive): ?>
-                                        <button type="submit" name="toggle_user_action" class="btn-pause" onclick="return confirm('إيقاف حساب هذا السائق عن استقبال الطلبات؟');">⛔ إيقاف</button>
+                                        <button type="submit" class="btn-pause" onclick="return confirm('إيقاف حساب هذا السائق عن استقبال الطلبات؟');">⛔ إيقاف</button>
                                     <?php else: ?>
-                                        <button type="submit" name="toggle_user_action" class="btn-activate" onclick="return confirm('اعتماد وتشغيل حساب السائق لاستقبال الطلبات؟');">✅ اعتماد</button>
+                                        <button type="submit" class="btn-activate" onclick="return confirm('اعتماد وتشغيل حساب السائق لاستقبال الطلبات؟');">✅ اعتماد</button>
                                     <?php endif; ?>
                                 </form>
 
                                 <!-- زر الحذف -->
                                 <form method="POST" style="display:inline; margin:0;">
                                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="hidden" name="delete_user_action" value="1">
                                     <input type="hidden" name="user_id" value="<?php echo intval($d['id']); ?>">
                                     <input type="hidden" name="user_role" value="driver">
-                                    <button type="submit" name="delete_user_action" class="btn-delete" onclick="return confirm('حذف حساب السائق نهائياً؟');">🗑️ حذف</button>
+                                    <button type="submit" class="btn-delete" onclick="return confirm('حذف حساب السائق نهائياً؟');">🗑️ حذف</button>
                                 </form>
                             </div>
                         </td>
@@ -629,22 +631,24 @@ if ($pdo) {
                                 <!-- زر الحظر / التفعيل -->
                                 <form method="POST" style="display:inline; margin:0;">
                                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="hidden" name="toggle_user_action" value="1">
                                     <input type="hidden" name="user_id" value="<?php echo intval($c['id']); ?>">
                                     <input type="hidden" name="user_role" value="client">
                                     <input type="hidden" name="set_state" value="<?php echo $isClientActive ? '0' : '1'; ?>">
                                     <?php if ($isClientActive): ?>
-                                        <button type="submit" name="toggle_user_action" class="btn-pause" onclick="return confirm('حظر حساب هذا العميل ومنعه من الدخول؟');">⛔ حظر الحساب</button>
+                                        <button type="submit" class="btn-pause" onclick="return confirm('حظر حساب هذا العميل ومنعه من الدخول؟');">⛔ حظر الحساب</button>
                                     <?php else: ?>
-                                        <button type="submit" name="toggle_user_action" class="btn-activate" onclick="return confirm('إلغاء حظر حساب هذا العميل وتفعيله؟');">✅ إلغاء الحظر</button>
+                                        <button type="submit" class="btn-activate" onclick="return confirm('إلغاء حظر حساب هذا العميل وتفعيله؟');">✅ إلغاء الحظر</button>
                                     <?php endif; ?>
                                 </form>
 
                                 <!-- زر الحذف -->
                                 <form method="POST" style="display:inline; margin:0;">
                                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="hidden" name="delete_user_action" value="1">
                                     <input type="hidden" name="user_id" value="<?php echo intval($c['id']); ?>">
                                     <input type="hidden" name="user_role" value="client">
-                                    <button type="submit" name="delete_user_action" class="btn-delete" onclick="return confirm('حذف حساب هذا العميل نهائياً؟');">🗑️ حذف</button>
+                                    <button type="submit" class="btn-delete" onclick="return confirm('حذف حساب هذا العميل نهائياً؟');">🗑️ حذف</button>
                                 </form>
                             </div>
                         </td>

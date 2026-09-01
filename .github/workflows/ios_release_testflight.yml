@@ -63,6 +63,7 @@ jobs:
 
       - name: Verify Flutter & CocoaPods
         run: |
+          flutter --version
           flutter doctor -v
           pod --version
 

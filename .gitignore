@@ -20,3 +20,16 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+
+# Secrets & Apple Signing
+*.p8
+*.p12
+*.key
+*.pem
+*.mobileprovision
+prepared_secrets.json
+ios_signing/
+set_api_key_secret.py
+upload_all_secrets.py
+encode_secrets.py
+
