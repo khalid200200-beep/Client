@@ -1,1 +1,5 @@
 #include "Generated.xcconfig"
+DEVELOPMENT_TEAM = Z9HKXT9G7X
+CODE_SIGN_IDENTITY = Apple Distribution
+CODE_SIGN_STYLE = Manual
+PROVISIONING_PROFILE_SPECIFIER = SUDRA Client App Store

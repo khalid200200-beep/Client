@@ -7,11 +7,18 @@
 	<key>method</key>
 	<string>app-store</string>
 	<key>signingStyle</key>
-	<string>automatic</string>
+	<string>manual</string>
+	<key>signingCertificate</key>
+	<string>Apple Distribution</string>
+	<key>teamID</key>
+	<string>Z9HKXT9G7X</string>
+	<key>provisioningProfiles</key>
+	<dict>
+		<key>com.shipping.driverapp</key>
+		<string>d5948696-7e4c-4cef-a22c-b9a3f265c7f3</string>
+	</dict>
 	<key>stripSwiftSymbols</key>
 	<true/>
-	<key>teamID</key>
-	<string>YOUR_TEAM_ID</string>
 	<key>uploadSymbols</key>
 	<true/>
 </dict>

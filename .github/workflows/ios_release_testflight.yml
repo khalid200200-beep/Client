@@ -98,12 +98,14 @@ jobs:
             echo "Certificate & Private Key successfully imported into keychain."
           fi
 
-          # 3. Decode and import Provisioning Profile
+          # 3. Decode and import Provisioning Profile with UUID and name mapping
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           if [ "$CURRENT_APP" = "client_app" ] && [ -n "$PROVISION_PROFILE_CLIENT" ]; then
-            python3 -c "import os, base64; open(os.path.expanduser('~/Library/MobileDevice/Provisioning Profiles/client.mobileprovision'), 'wb').write(base64.b64decode(os.environ['PROVISION_PROFILE_CLIENT']))"
+            python3 -c "import os, base64; open(os.path.expanduser('~/Library/MobileDevice/Provisioning Profiles/68e5fddf-e87a-4011-9859-00da38b0c3e5.mobileprovision'), 'wb').write(base64.b64decode(os.environ['PROVISION_PROFILE_CLIENT']))"
+            cp ~/Library/MobileDevice/Provisioning\ Profiles/68e5fddf-e87a-4011-9859-00da38b0c3e5.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/client.mobileprovision
           elif [ "$CURRENT_APP" = "driver_app" ] && [ -n "$PROVISION_PROFILE_DRIVER" ]; then
-            python3 -c "import os, base64; open(os.path.expanduser('~/Library/MobileDevice/Provisioning Profiles/driver.mobileprovision'), 'wb').write(base64.b64decode(os.environ['PROVISION_PROFILE_DRIVER']))"
+            python3 -c "import os, base64; open(os.path.expanduser('~/Library/MobileDevice/Provisioning Profiles/d5948696-7e4c-4cef-a22c-b9a3f265c7f3.mobileprovision'), 'wb').write(base64.b64decode(os.environ['PROVISION_PROFILE_DRIVER']))"
+            cp ~/Library/MobileDevice/Provisioning\ Profiles/d5948696-7e4c-4cef-a22c-b9a3f265c7f3.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/driver.mobileprovision
           fi
 
           # 4. Set keychain in user search list
