@@ -11,7 +11,7 @@ on:
           - client_app
           - driver_app
           - both
-        default: client_app
+        default: both
       build_number:
         description: 'Build Number (e.g. 1, 2, 3)'
         required: false
@@ -23,6 +23,7 @@ jobs:
     timeout-minutes: 60
 
     strategy:
+      fail-fast: false
       matrix:
         app: ${{ fromJson(github.event.inputs.target_app == 'both' && '["client_app", "driver_app"]' || (github.event.inputs.target_app == 'driver_app' && '["driver_app"]' || '["client_app"]')) }}
 
@@ -68,8 +69,8 @@ jobs:
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
           P12_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
-          PROVISION_PROFILE_CLIENT: ${{ secrets.APPLE_PROVISION_PROFILE_CLIENT_BASE64 || secrets.APPLE_PROVISION_PROFILE_BASE64 }}
-          PROVISION_PROFILE_DRIVER: ${{ secrets.APPLE_PROVISION_PROFILE_DRIVER_BASE64 || secrets.APPLE_PROVISION_PROFILE_BASE64 }}
+          PROVISION_PROFILE_CLIENT: ${{ secrets.APPLE_PROVISION_PROFILE_CLIENT_BASE64 }}
+          PROVISION_PROFILE_DRIVER: ${{ secrets.APPLE_PROVISION_PROFILE_DRIVER_BASE64 }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD || 'temporary_keychain_pass' }}
           CURRENT_APP: ${{ matrix.app }}
         run: |
@@ -78,12 +79,13 @@ jobs:
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security default-keychain -s $KEYCHAIN_PATH
 
           # Import Distribution Certificate
           if [ -n "$BUILD_CERTIFICATE_BASE64" ]; then
             CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
             echo "$BUILD_CERTIFICATE_BASE64" | base64 --decode > $CERTIFICATE_PATH
-            security import $CERTIFICATE_PATH -k $KEYCHAIN_PATH -P "$P12_PASSWORD" -T /usr/bin/codesign
+            security import $CERTIFICATE_PATH -k $KEYCHAIN_PATH -P "$P12_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security
             security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           fi
 
