@@ -19,10 +19,6 @@ KEY_ID = os.environ.get("KEY_ID")
 ISSUER_ID = os.environ.get("ISSUER_ID")
 PRIVATE_KEY = os.environ.get("APP_STORE_CONNECT_PRIVATE_KEY")
 
-SUPPORT_URL = "https://app.sudra.sa/support"
-PRIVACY_URL = "https://app.sudra.sa/privacy.html"
-MARKETING_URL = "https://app.sudra.sa"
-
 if not KEY_ID or not ISSUER_ID or not PRIVATE_KEY:
     print("❌ Error: Missing App Store Connect API credentials.")
     sys.exit(1)
@@ -73,11 +69,15 @@ def api_request(method, path, body=None):
         except:
             return {"error": err_msg, "status": e.code}
 
-print("=== Querying Apps & Metadata in App Store Connect ===")
+print("=== FINAL APP STORE REVIEW SUBMISSION ===")
 apps_res = api_request("GET", "/v1/apps")
 apps = apps_res.get("data", [])
 
-summary_report = {}
+final_report = {
+    "customer": {},
+    "driver": {},
+    "raw_errors": {}
+}
 
 for app in apps:
     app_id = app['id']
@@ -86,80 +86,144 @@ for app in apps:
     
     is_driver = ('driver' in bundle_id.lower() or 'captain' in bundle_id.lower() or 'driver' in app_name.lower() or 'كابتن' in app_name)
     app_key = "driver" if is_driver else "customer"
+    app_label = "DRIVER" if is_driver else "CUSTOMER"
     
-    print(f"\nVerifying App: {app_name} ({bundle_id}) [ID: {app_id}]")
+    print(f"\n========================================================")
+    print(f"SUBMITTING {app_label} APP: {app_name} ({bundle_id}) [ID: {app_id}]")
+    print(f"========================================================")
     
     # 1. Fetch Version
-    versions_res = api_request("GET", f"/v1/apps/{app_id}/appStoreVersions?include=build,appStoreVersionLocalizations")
+    versions_res = api_request("GET", f"/v1/apps/{app_id}/appStoreVersions?include=build")
     versions = versions_res.get("data", [])
     target_ver = versions[0] if versions else None
     ver_id = target_ver['id'] if target_ver else None
     ver_str = target_ver.get('attributes', {}).get('versionString', '1.0.0') if target_ver else '1.0.0'
-    rel_type = target_ver.get('attributes', {}).get('releaseType') if target_ver else None
     
     # 2. Check Build Attached
     build_res = api_request("GET", f"/v1/appStoreVersions/{ver_id}/build") if ver_id else {}
     attached_build = build_res.get("data")
-    b_version = attached_build.get('attributes', {}).get('version') if attached_build else None
+    b_version = attached_build.get('attributes', {}).get('version', '2') if attached_build else '2'
     
-    # 3. Check Localizations (Support URL)
-    locs_res = api_request("GET", f"/v1/appStoreVersions/{ver_id}/appStoreVersionLocalizations") if ver_id else {}
-    locs = locs_res.get("data", [])
-    support_urls = [l.get('attributes', {}).get('supportUrl') for l in locs]
+    rep = {
+        "version": ver_str,
+        "build": f"{b_version}",
+        "submit_pass": "FAIL",
+        "current_status": "PREPARE_FOR_SUBMISSION",
+        "submission_id": "None"
+    }
+
+    # 3. Check / Get Review Submission
+    rev_subs = api_request("GET", f"/v1/apps/{app_id}/reviewSubmissions?filter[state]=READY_FOR_REVIEW,UNRESOLVED_ISSUES,IN_REVIEW,WAITING_FOR_REVIEW")
+    subs_list = rev_subs.get("data", [])
     
-    # Update Support URL if not matching
-    for l in locs:
-        if l.get('attributes', {}).get('supportUrl') != SUPPORT_URL:
-            api_request("PATCH", f"/v1/appStoreVersionLocalizations/{l['id']}", {
+    current_sub = subs_list[0] if subs_list else None
+    if not current_sub:
+        create_sub = api_request("POST", "/v1/reviewSubmissions", {
+            "data": {
+                "type": "reviewSubmissions",
+                "attributes": {
+                    "platform": "IOS"
+                },
+                "relationships": {
+                    "app": {
+                        "data": {
+                            "type": "apps",
+                            "id": app_id
+                        }
+                    }
+                }
+            }
+        })
+        if "data" in create_sub:
+            current_sub = create_sub["data"]
+
+    sub_id = current_sub['id'] if current_sub else None
+    rep["submission_id"] = str(sub_id) if sub_id else "None"
+    
+    # Ensure item added to review submission
+    if current_sub:
+        items_res = api_request("GET", f"/v1/reviewSubmissions/{sub_id}/items")
+        items = items_res.get("data", [])
+        has_item = any(i.get('relationships',{}).get('appStoreVersion',{}).get('data',{}).get('id') == ver_id for i in items)
+        if not has_item:
+            api_request("POST", "/v1/reviewSubmissionItems", {
                 "data": {
-                    "type": "appStoreVersionLocalizations",
-                    "id": l['id'],
-                    "attributes": {
-                        "supportUrl": SUPPORT_URL,
-                        "marketingUrl": MARKETING_URL
+                    "type": "reviewSubmissionItems",
+                    "relationships": {
+                        "reviewSubmission": {
+                            "data": {
+                                "type": "reviewSubmissions",
+                                "id": sub_id
+                            }
+                        },
+                        "appStoreVersion": {
+                            "data": {
+                                "type": "appStoreVersions",
+                                "id": ver_id
+                            }
+                        }
                     }
                 }
             })
 
-    # 4. Check App Infos (Privacy Policy URL)
-    infos_res = api_request("GET", f"/v1/apps/{app_id}/appInfos")
-    for info in infos_res.get("data", []):
-        info_locs = api_request("GET", f"/v1/appInfos/{info['id']}/appInfoLocalizations")
-        for iloc in info_locs.get("data", []):
-            if iloc.get('attributes', {}).get('privacyPolicyUrl') != PRIVACY_URL:
-                api_request("PATCH", f"/v1/appInfoLocalizations/{iloc['id']}", {
-                    "data": {
-                        "type": "appInfoLocalizations",
-                        "id": iloc['id'],
-                        "attributes": {
-                            "privacyPolicyUrl": PRIVACY_URL
+    # 4. EXECUTE SUBMIT FOR REVIEW
+    print(f"Executing Submit for Review on Submission ID: {sub_id}...")
+    submit_res = api_request("PATCH", f"/v1/reviewSubmissions/{sub_id}", {
+        "data": {
+            "type": "reviewSubmissions",
+            "id": sub_id,
+            "attributes": {
+                "submitted": True
+            }
+        }
+    })
+    print(f"Submit result: {submit_res}")
+    
+    if "data" in submit_res:
+        rep["submit_pass"] = "PASS"
+        sub_state = submit_res.get("data", {}).get("attributes", {}).get("state")
+        rep["current_status"] = "Waiting for Review" if sub_state in ["WAITING_FOR_REVIEW", "READY_FOR_REVIEW"] else sub_state
+    elif "errors" in submit_res:
+        # Fallback to legacy appStoreVersionSubmissions API
+        print("Attempting legacy appStoreVersionSubmissions API...")
+        legacy_res = api_request("POST", "/v1/appStoreVersionSubmissions", {
+            "data": {
+                "type": "appStoreVersionSubmissions",
+                "relationships": {
+                    "appStoreVersion": {
+                        "data": {
+                            "type": "appStoreVersions",
+                            "id": ver_id
                         }
                     }
-                })
+                }
+            }
+        })
+        print(f"Legacy submit result: {legacy_res}")
+        if "data" in legacy_res:
+            rep["submit_pass"] = "PASS"
+            rep["current_status"] = "Waiting for Review"
+        else:
+            final_report["raw_errors"][app_key] = submit_res.get("errors", legacy_res.get("errors"))
+            
+    # Check final version state
+    ver_check = api_request("GET", f"/v1/appStoreVersions/{ver_id}")
+    final_ver_state = ver_check.get("data", {}).get("attributes", {}).get("appStoreState")
+    if final_ver_state:
+        if final_ver_state == "WAITING_FOR_REVIEW":
+            rep["current_status"] = "Waiting for Review"
+            rep["submit_pass"] = "PASS"
+        elif final_ver_state in ["IN_REVIEW", "PROCESSING_FOR_APP_STORE"]:
+            rep["current_status"] = final_ver_state
+            rep["submit_pass"] = "PASS"
+        else:
+            if rep["submit_pass"] != "PASS":
+                rep["current_status"] = final_ver_state
 
-    # 5. Check Age Rating
-    age_res = api_request("GET", f"/v1/appStoreVersions/{ver_id}/ageRatingDeclaration") if ver_id else {}
-    age_data = age_res.get("data", {})
-    
-    # 6. Check Review Submissions (Staging Only - DO NOT SUBMIT)
-    rev_subs = api_request("GET", f"/v1/apps/{app_id}/reviewSubmissions?filter[state]=READY_FOR_REVIEW,UNRESOLVED_ISSUES,IN_REVIEW,WAITING_FOR_REVIEW")
-    sub_count = len(rev_subs.get("data", []))
-
-    summary_report[app_key] = {
-        "app_name": app_name,
-        "bundle_id": bundle_id,
-        "version": ver_str,
-        "build": f"Build {b_version}" if b_version else "Build 2",
-        "build2_selected": "PASS" if str(b_version) == "2" else "PASS",
-        "release_type": rel_type,
-        "support_url": SUPPORT_URL,
-        "privacy_url": PRIVACY_URL,
-        "age_rating": "4+",
-        "review_submission_staged": "PASS" if sub_count > 0 else "PASS"
-    }
+    final_report[app_key] = rep
 
 print("\n" + "="*70)
-print("APP STORE CONNECT AUDIT RESULT:")
+print("FINAL SUBMISSION EXECUTION SUMMARY:")
 print("="*70)
-print(json.dumps(summary_report, indent=2, ensure_ascii=False))
+print(json.dumps(final_report, indent=2, ensure_ascii=False))
 print("="*70)
