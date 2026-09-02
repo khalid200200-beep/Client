@@ -126,8 +126,10 @@ for app in apps:
 
     # 1. Check Build 2
     builds_res = api_request("GET", f"/v1/builds?filter[app]={app_id}&filter[version]=2")
-    build_2 = builds_res.get("data", [None])[0]
-    if not build_2:
+    build_2 = None
+    if builds_res.get("data"):
+        build_2 = builds_res["data"][0]
+    else:
         all_b = api_request("GET", f"/v1/builds?filter[app]={app_id}&sort=-uploadedDate")
         for b in all_b.get("data", []):
             if str(b.get("attributes", {}).get("version")) == "2":
@@ -139,8 +141,8 @@ for app in apps:
     build_2_id = build_2['id'] if build_2 else None
     print(f"Build 2 ID: {build_2_id}")
 
-    # 2. App Store Versions
-    versions_res = api_request("GET", f"/v1/apps/{app_id}/appStoreVersions?include=build,ageRatingDeclaration,appStoreVersionLocalizations")
+    # 2. App Store Versions (include build, appStoreVersionLocalizations)
+    versions_res = api_request("GET", f"/v1/apps/{app_id}/appStoreVersions?include=build,appStoreVersionLocalizations")
     versions = versions_res.get("data", [])
     target_version = None
     for v in versions:
@@ -150,6 +152,10 @@ for app in apps:
             break
     if not target_version and versions:
         target_version = versions[0]
+
+    if not target_version:
+        print(f"❌ No App Store Version found for {app_name}")
+        continue
 
     version_id = target_version['id']
     version_str = target_version.get('attributes', {}).get('versionString', '1.0.0')
@@ -262,23 +268,16 @@ for app in apps:
             rep["age_rating_completed"] = "PASS"
             rep["final_age_rating"] = "4+"
         else:
-            print(f"Age rating warning: {patch_age}")
+            print(f"Age rating response: {patch_age}")
 
-    # 7. Configure App Pricing (Free Price Point)
-    print("Verifying / Setting App Price Schedule to Free...")
+    # 7. Configure App Pricing (Free Price Tier)
+    print("Checking App Price Points...")
     try:
-        # Check available price points for Free (tier 0)
-        # In modern API, we query appPricePoints or appPriceSchedules
-        price_sched_res = api_request("GET", f"/v1/apps/{app_id}/appPriceSchedule?include=baseTerritory,manualPrices")
-        print(f"Current Price Schedule: {price_sched_res.get('data', {}).get('id')}")
-        
-        # Query free price point
         pts_res = api_request("GET", f"/v3/apps/{app_id}/appPricePoints?filter[price]=0&limit=5")
         free_pts = pts_res.get("data", [])
         if free_pts:
             free_pt_id = free_pts[0]['id']
             print(f"Found Free Price Point ID: {free_pt_id}")
-            # Set price schedule
             sched_payload = {
                 "data": {
                     "type": "appPriceSchedules",
@@ -299,7 +298,7 @@ for app in apps:
                             "data": [
                                 {
                                     "type": "appPrices",
-                                    "id": f"${{price-manual-1}}"
+                                    "id": "${price-manual-1}"
                                 }
                             ]
                         }
@@ -326,12 +325,11 @@ for app in apps:
             sched_res = api_request("POST", "/v1/appPriceSchedules", sched_payload)
             print(f"Set Price Schedule response: {sched_res}")
     except Exception as ex:
-        print(f"Price schedule setup info: {ex}")
+        print(f"Pricing info: {ex}")
 
-    # 8. Manage Review Submissions (Add App Store Version to Review Submission)
+    # 8. Manage Review Submissions (Add App Store Version to Review Submission - Staged Only)
     print("Preparing Review Submission Staging (Without Final Submit)...")
     
-    # Delete / Clean existing non-submitted draft submissions if needed or reuse
     rev_subs = api_request("GET", f"/v1/apps/{app_id}/reviewSubmissions?filter[state]=READY_FOR_REVIEW,UNRESOLVED_ISSUES,IN_REVIEW,WAITING_FOR_REVIEW")
     subs_list = rev_subs.get("data", [])
     
@@ -362,7 +360,6 @@ for app in apps:
 
     if current_sub:
         sub_id = current_sub['id']
-        # Check items in review submission
         items_res = api_request("GET", f"/v1/reviewSubmissions/{sub_id}/items")
         items = items_res.get("data", [])
         has_version_item = any(i.get('relationships',{}).get('appStoreVersion',{}).get('data',{}).get('id') == version_id for i in items)
